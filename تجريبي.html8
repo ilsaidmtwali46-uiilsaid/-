@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعليم الحروف والكلمات مع التشكيل والنطق</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 15px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .letter-card {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .letter-header {
+            background-color: #2b6cb0;
+            color: white;
+            padding: 10px 20px;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border-bottom: 1px solid #edf2f7;
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-size: 15px;
+        }
+        .haraka-cell {
+            font-size: 26px;
+            font-weight: bold;
+            color: #c53030;
+            width: 15%;
+        }
+        .words-cell {
+            text-align: right;
+            padding-right: 20px;
+            width: 60%;
+        }
+        .word-tag {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+            padding: 6px 12px;
+            margin: 3px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .action-cell {
+            width: 25%;
+        }
+        button.speak-btn {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+        button.speak-btn:hover {
+            background-color: #2f855a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>جدول الحروف الهجائية والتوافيق مع 3 كلمات ونطقها</h2>
+    <div class="subtitle" id="totalInfo">جاري تحميل البيانات...</div>
+
+    <div id="contentArea">
+        <!-- سيتم توليد البطاقات عبر الجافاسكريبت -->
+    </div>
+</div>
+
+<script>
+    // مصفوفة الحروف الـ 28 مع تشكيلاتها و3 كلمات مثال لكل حركة
+    const data = [
+        {
+            letter: "أ - الألف",
+            forms: [
+                { symbol: "أَ", name: "فتحة", words: ["أَسَد", "أَرْنَب", "أَمَل"] },
+                { symbol: "إِ", name: "كسرة", words: ["إِبْرِيق", "إِبَرَة", "إِبِل"] },
+                { symbol: "أُ", name: "ضمة", words: ["أُذُن", "أُمّ", "أُسْرَة"] }
+            ]
+        },
+        {
+            letter: "ب - الباء",
+            forms: [
+                { symbol: "بَ", name: "فتحة", words: ["بَطَّة", "بَاب", "بَيْت"] },
+                { symbol: "بِ", name: "كسرة", words: ["بِنْت", "بِطِّيخ", "بِئْر"] },
+                { symbol: "بُ", name: "ضمة", words: ["بُرْتُقَال", "بُومَة", "بُرْج"] }
+            ]
+        },
+        {
+            letter: "ت - التاء",
+            forms: [
+                { symbol: "تَ", name: "فتحة", words: ["تَمْر", "تَاج", "تِمْسَاح"] },
+                { symbol: "تِ", name: "كسرة", words: ["تِين", "تِلْفَاز", "تِلْمِيذ"] },
+                { symbol: "تُ", name: "ضمة", words: ["تُفَّاح", "تُرَاب", "تُجَّار"] }
+            ]
+        },
+        {
+            letter: "ث - الثاء",
+            forms: [
+                { symbol: "ثَ", name: "فتحة", words: ["ثَعْلَب", "ثَوْم", "ثَوْب"] },
+                { symbol: "ثِ", name: "كسرة", words: ["ثِمَار", "ثِقَة", "ثِيَاب"] },
+                { symbol: "ثُ", name: "ضمة", words: ["ثُعْبَان", "ثُلُث", "ثُرَيَّا"] }
+            ]
+        },
+        {
+            letter: "ج - الجيم",
+            forms: [
+                { symbol: "جَ", name: "فتحة", words: ["جَمَل", "جَبَل", "جَرَس"] },
+                { symbol: "جِ", name: "كسرة", words: ["جِدَار", "جِسْر", "جِلْد"] },
+                { symbol: "جُ", name: "ضمة", words: ["جُنَّاس", "جُنَّيْنَة", "جُمُعَة"] }
+            ]
+        },
+        {
+            letter: "ح - الحاء",
+            forms: [
+                { symbol: "حَ", name: "فتحة", words: ["حَمَامَة", "حَقِيبة", "حَلِيب"] },
+                { symbol: "حِ", name: "كسرة", words: ["حِمَار", "حِصَان", "حِذَاء"] },
+                { symbol: "حُ", name: "ضمة", words: ["حُوت", "حُلْم", "حُقْنَة"] }
+            ]
+        },
+        {
+            letter: "خ - الخاء",
+            forms: [
+                { symbol: "خَ", name: "فتحة", words: ["خَرُوف", "خُبْز", "خَشَب"] },
+                { symbol: "خِ", name: "كسرة", words: ["خِيَار", "خِزَانَة", "خِطَاب"] },
+                { symbol: "خُ", name: "ضمة", words: ["خُفَّاش", "خُوذَة", "خُطُوات"] }
+            ]
+        },
+        {
+            letter: "د - الدال",
+            forms: [
+                { symbol: "دَ", name: "فتحة", words: ["دَجَاجَة", "دَفْتَر", "دَار"] },
+                { symbol: "دِ", name: "كسرة", words: ["دِهَان", "دِرْع", "دِينِار"] },
+                { symbol: "دُ", name: "ضمة", words: ["دُبّ", "دُخَان", "دُرَّاة"] }
+            ]
+        },
+        {
+            letter: "ذ - الذال",
+            forms: [
+                { symbol: "ذَ", name: "فتحة", words: ["ذَهَب", "ذَيْل", "ذَكَر"] },
+                { symbol: "ذِ", name: "كسرة", words: ["ذِئْب", "ذِكْرَى", "ذِرَاع"] },
+                { symbol: "ذُ", name: "ضمة", words: ["ذُرَة", "ذُبَابَة", "ذُنُوب"] }
+            ]
+        },
+        {
+            letter: "ر - الراء",
+            forms: [
+                { symbol: "رَ", name: "فتحة", words: ["رَجُل", "رَأْس", "رَمْل"] },
+                { symbol: "رِ", name: "كسرة", words: ["رِجْل", "رِسَالَة", "رِيَاح"] },
+                { symbol: "رُ", name: "ضمة", words: ["رُمَّان", "رُكْبَة", "رُخَام"] }
+            ]
+        },
+        {
+            letter: "ز - الزاي",
+            forms: [
+                { symbol: "زَ", name: "فتحة", words: ["زَرَافَة", "زَهْرَة", "زَيْت"] },
+                { symbol: "زِ", name: "كسرة", words: ["زِرّ", "زِيَارَة", "زِينَة"] },
+                { symbol: "زُ", name: "ضمة", words: ["زُجَاج", "زُهُور", "زُبْدَة"] }
+            ]
+        },
+        {
+            letter: "س - السين",
+            forms: [
+                { symbol: "سَ", name: "فتحة", words: ["سَمَكَة", "سَيَّارَة", "سَاعَة"] },
+                { symbol: "سِ", name: "كسرة", words: ["سِكِّين", "سِرْوَال", "سِتَار"] },
+                { symbol: "سُ", name: "ضمة", words: ["سُلَحْفَاة", "سُكَّر", "سُور"] }
+            ]
+        },
+        {
+            letter: "ش - الشين",
+            forms: [
+                { symbol: "شَ", name: "فتحة", words: ["شَمْس", "شَجَرَة", "شَمْعَة"] },
+                { symbol: "شِ", name: "كسرة", words: ["شِتَاء", "شِراع", "شِعْر"] },
+                { symbol: "شُ", name: "ضمة", words: ["شُعْلَة", "شُرْطَة", "شُبَّاك"] }
+            ]
+        },
+        {
+            letter: "ص - الصاد",
+            forms: [
+                { symbol: "صَ", name: "فتحة", words: ["صَقْر", "صَابُون", "صَحْن"] },
+                { symbol: "صِ", name: "كسرة", words: ["صِنَّارَة", "صِينِيَّة", "صِغَر"] },
+                { symbol: "صُ", name: "ضمة", words: ["صُنْدُوق", "صُورَة", "صُوف"] }
+            ]
+        },
+        {
+            letter: "ض - الضاد",
+            forms: [
+                { symbol: "ضَ", name: "فتحة", words: ["ضَبَاب", "ضَوْء", "ضَفْدَع"] },
+                { symbol: "ضِ", name: "كسرة", words: ["ضِرْس", "ضِيَافَة", "ضِمَاد"] },
+                { symbol: "ضُ", name: "ضمة", words: ["ضُبَّاط", "ضُحَى", "ضُرُوب"] }
+            ]
+        },
+        {
+            letter: "ط - الطاء",
+            forms: [
+                { symbol: "طَ", name: "فتحة", words: ["طَبِيب", "طَائِرَة", "طَماطِم"] },
+                { symbol: "طِ", name: "كسرة", words: ["طِفْل", "طِين", "طِلاَء"] },
+                { symbol: "طُ", name: "ضمة", words: ["طُيُور", "طُوب", "طُرُوق"] }
+            ]
+        },
+        {
+            letter: "ظ - الظاء",
+            forms: [
+                { symbol: "ظَ", name: "فتحة", words: ["ظَبْي", "ظَرْف", "ظَلاَم"] },
+                { symbol: "ظِ", name: "كسرة", words: ["ظِلّ", "ظِلَال", "ظِلاَلَة"] },
+                { symbol: "ظُ", name: "ضمة", words: ["ظُفْر", "ظُهْر", "ظُلْمَة"] }
+            ]
+        },
+        {
+            letter: "ع - العين",
+            forms: [
+                { symbol: "عَ", name: "فتحة", words: ["عَلَم", "عَيْن", "عَنَكَبُوت"] },
+                { symbol: "عِ", name: "كسرة", words: ["عِنَب", "عِمَارَة", "عِطْر"] },
+                { symbol: "عُ", name: "ضمة", words: ["عُشّ", "عُود", "عُصْفُور"] }
+            ]
+        },
+        {
+            letter: "غ - الغين",
+            forms: [
+                { symbol: "غَ", name: "فتحة", words: ["غَزَال", "غَابَة", "غَمَام"] },
+                { symbol: "غِ", name: "كسرة", words: ["غِلَاف", "غَزْل", "غِذَاء"] },
+                { symbol: "غُ", name: "ضمة", words: ["غُرَاب", "غُرْفَة", "غُبَار"] }
+            ]
+        },
+        {
+            letter: "ف - الفاء",
+            forms: [
+                { symbol: "فَ", name: "فتحة", words: ["فَرَاشَة", "فِيل", "فَرَس"] },
+                { symbol: "فِ", name: "كسرة", words: ["فِيل", "فِنْجَان", "فِرَاش"] },
+                { symbol: "فُ", name: "ضمة", words: ["فُلّ", "فُرْن", "فُسْتَان"] }
+            ]
+        },
+        {
+            letter: "ق - القاف",
+            forms: [
+                { symbol: "قَ", name: "فتحة", words: ["قَلَم", "قَمَر", "قَارِب"] },
+                { symbol: "قِ", name: "كسرة", words: ["قِطّ", "قِرْد", "قِطَار"] },
+                { symbol: "قُ", name: "ضمة", words: ["قُبَّعَة", "قُفْل", "قُرْآن"] }
+            ]
+        },
+        {
+            letter: "ك - الكاف",
+            forms: [
+                { symbol: "كَ", name: "فتحة", words: ["كَلْب", "كِتَاب", "كَعْك"] },
+                { symbol: "كِ", name: "كسرة", words: ["كِتَاب", "كِسْسَاء", "كِلْيَة"] },
+                { symbol: "كُ", name: "ضمة", words: ["كُرَة", "كُرْسِيّ", "كُوب"] }
+            ]
+        },
+        {
+            letter: "ل - اللام",
+            forms: [
+                { symbol: "لَ", name: "فتحة", words: ["لَمْبَة", "لَحْم", "لَبَن"] },
+                { symbol: "لِ", name: "كسرة", words: ["لِسَان", "لِبَاس", "لِصّ"] },
+                { symbol: "لُ", name: "ضمة", words: ["لُعْبَة", "لُؤْلُؤ", "لَيْمُون"] }
+            ]
+        },
+        {
+            letter: "م - الميم",
+            forms: [
+                { symbol: "مَ", name: "فتحة", words: ["مَوْز", "مَسْجِد", "مَلِك"] },
+                { symbol: "مِ", name: "كسرة", words: ["مِقَصّ", "مِفْتَاح", "مِظَلَّة"] },
+                { symbol: "مُ", name: "ضمة", words: ["مُهَنْدِس", "مُعَلِّم", "مُصْحَف"] }
+            ]
+        },
+        {
+            letter: "ن - النون",
+            forms: [
+                { symbol: "نَ", name: "فتحة", words: ["نَجْمَة", "نَخْلَة", "نَهْر"] },
+                { symbol: "نِ", name: "كسرة", words: ["نِسْر", "نِظَارَة", "نِعْمَة"] },
+                { symbol: "نُ", name: "ضمة", words: ["نُجُوم", "نُور", "نُقُود"] }
+            ]
+        },
+        {
+            letter: "هـ - الهاء",
+            forms: [
+                { symbol: "هَ", name: "فتحة", words: ["هَرَم", "هَدِيَّة", "هَاتِف"] },
+                { symbol: "هـِ", name: "كسرة", words: ["هِلَال", "هِمَّة", "هِيَام"] },
+                { symbol: "هـُ", name: "ضمة", words: ["هُدْهُد", "هُدُوء", "هُنَا"] }
+            ]
+        },
+        {
+            letter: "و - الواو",
+            forms: [
+                { symbol: "وَ", name: "فتحة", words: ["وَرَدَة", "وَلَد", "وَجْه"] },
+                { symbol: "وِ", name: "كسرة", words: ["وِسام", "وِعَاء", "وِلاَدَة"] },
+                { symbol: "وُ", name: "ضمة", words: ["وُرُود", "وُضُوء", "وُجُوه"] }
+            ]
+        },
+        {
+            letter: "ي - الياء",
+            forms: [
+                { symbol: "يَ", name: "فتحة", words: ["يَد", "يَاسمِين", "يَمَامَة"] },
+                { symbol: "يِ", name: "كسرة", words: ["يَنَايِر", "يَقِين", "يَادَار"] },
+                { symbol: "يُ", name: "ضمة", words: ["يُوسُفِي", "يُنَابِيع", "يُسْر"] }
+            ]
+        }
+    ];
+
+    const contentArea = document.getElementById("contentArea");
+    const totalInfo = document.getElementById("totalInfo");
+
+    let totalCombinations = 0;
+    let totalWordsCount = 0;
+
+    data.forEach((item, index) => {
+        let cardHTML = `
+            <div class="letter-card">
+                <div class="letter-header">
+                    <span>${item.letter}</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الحركة</th>
+                            <th>3 كلمات أمثلة</th>
+                            <th>النطق الصوتي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        item.forms.forEach(form => {
+            totalCombinations++;
+            totalWordsCount += form.words.length;
+            const wordsJoined = form.words.map(w => `<span class="word-tag">${w}</span>`).join(" ");
+            const speechText = `${form.symbol} ... الكلمات هي: ${form.words.join("، ")}`;
+
+            cardHTML += `
+                <tr>
+                    <td class="haraka-cell">${form.symbol} <br><small style="font-size:12px; color:#718096;">(${form.name})</small></td>
+                    <td class="words-cell">${wordsJoined}</td>
+                    <td class="action-cell">
+                        <button class="speak-btn" onclick="speakSequence('${form.symbol}', ['${form.words.join("','")}'])">
+                            🔊 استمع للجميع
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        cardHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        contentArea.innerHTML += cardHTML;
+    });
+
+    totalInfo.innerHTML = `يحتوي التطبيق على <b>28 حرفاً</b> | <b>${totalCombinations} تشكيلاً أساسياً</b> | <b>${totalWordsCount} كلمة توضيحية</b> مع النطق.`;
+
+    // وظيفة النطق المتتابع (ينطق الحرف ثم الكلمات بالتتابع)
+    function speakSequence(symbol, wordsArray) {
+        if (!('speechSynthesis' in window)) {
+            alert("عذراً، ميزة النطق غير مدعومة في جهازك.");
+            return;
+        }
+
+        window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+
+        // 1. نطق الحرف أولاً
+        let utterSymbol = new SpeechSynthesisUtterance(symbol);
+        utterSymbol.lang = 'ar-SA';
+        utterSymbol.rate = 0.8;
+
+        window.speechSynthesis.speak(utterSymbol);
+
+        // 2. نطق الكلمات الثلاث واحدة تلو الأخرى
+        wordsArray.forEach(word => {
+            let utterWord = new SpeechSynthesisUtterance(word);
+            utterWord.lang = 'ar-SA';
+            utterWord.rate = 0.85;
+            window.speechSynthesis.speak(utterWord);
+        });
+    }
+</script>
+
+</body>
+</html>

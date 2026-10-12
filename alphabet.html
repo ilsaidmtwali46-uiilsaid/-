@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موسوعة القواعد الإعرابية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 12px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .main-title {
+            text-align: center;
+            color: #1a365d;
+            font-size: 20px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        /* شريط مفاتيح الأقسام */
+        .category-keys {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+            scrollbar-width: none;
+        }
+        .category-keys::-webkit-scrollbar {
+            display: none;
+        }
+        .key-btn {
+            background-color: #edf2f7;
+            color: #2d3748;
+            border: 2px solid #cbd5e0;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .key-btn.active {
+            background-color: #2b6cb0;
+            color: white;
+            border-color: #2b6cb0;
+            box-shadow: 0 3px 8px rgba(43, 108, 176, 0.3);
+        }
+
+        /* أقسام العرض */
+        .section-card {
+            display: none;
+            background: #fff;
+            border: 2px solid #cbd5e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .section-card.active {
+            display: block;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #2b6cb0, #1a365d);
+            color: white;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .sentence-item {
+            padding: 15px;
+            border-bottom: 2px dashed #e2e8f0;
+            background-color: #f8fafc;
+        }
+        .sentence-item:last-child {
+            border-bottom: none;
+        }
+        .sentence-title {
+            font-size: 20px;
+            color: #c53030;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .sentence-badge {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .explanation {
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-right: 4px solid #3182ce;
+        }
+        .rab-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .rab-table th, .rab-table td {
+            border: 1px solid #cbd5e0;
+            padding: 8px 10px;
+            text-align: right;
+            font-size: 14px;
+        }
+        .rab-table th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: bold;
+        }
+        .speak-btn {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .speak-btn:hover {
+            background-color: #2f855a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-title">موسوعة القواعد الإعرابية الشاملة</div>
+    <div class="subtitle">اضغط على أي مفتاح للانتقال الفوري للقسم المطلوب</div>
+
+    <!-- مفاتيح اختيار القسم -->
+    <div class="category-keys">
+        <button class="key-btn active" onclick="openTab('sec-marfooat', this)">1. المرفوعات</button>
+        <button class="key-btn" onclick="openTab('sec-mansoobat', this)">2. المنصوبات</button>
+        <button class="key-btn" onclick="openTab('sec-majroorat', this)">3. المجرورات</button>
+        <button class="key-btn" onclick="openTab('sec-tawabi', this)">4. التوابع</button>
+    </div>
+
+    <!-- 1. قسم المرفوعات -->
+    <div id="sec-marfooat" class="section-card active">
+        <div class="section-header">1. المرفوعات من الأسماء</div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">نَجَحَ المُجْتَهِدُ</div>
+            <span class="sentence-badge">الفاعل المرفوع</span>
+            <div class="explanation"><b>الشرح:</b> الفاعل اسم مرفوع يأتي بعد الفعل ليدل على من قام به.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>نَجَحَ</b></td><td>فعل ماض مبني على الفتح الظاهر.</td></tr>
+                    <tr><td><b>المُجْتَهِدُ</b></td><td>فاعل مرفوع وعلامة رفعه الضمة الظاهرة على آخره.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('نجح المجتهد. المجتهد فاعل مرفوع بالضمة')">🔊 استمع للإعراب</button>
+        </div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">العِلْمُ نُورٌ</div>
+            <span class="sentence-badge">المبتدأ والخبر</span>
+            <div class="explanation"><b>الشرح:</b> المبتدأ والخبر اسمان مرفوعان في الجملة الاسمية.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>العِلْمُ</b></td><td>مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة.</td></tr>
+                    <tr><td><b>نُورٌ</b></td><td>خبر المبتدأ مرفوع وعلامة رفعه الضمة الظاهرة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('العلم نور. العلم مبتدأ ونور خبر')">🔊 استمع للإعراب</button>
+        </div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">كُتِبَ الدَّرْسُ</div>
+            <span class="sentence-badge">نائب الفاعل</span>
+            <div class="explanation"><b>الشرح:</b> اسم مرفوع يحل محل الفاعل بعد حذفه وبناء الفعل للمجهول.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>كُتِبَ</b></td><td>فعل ماض مبني للمجهول.</td></tr>
+                    <tr><td><b>الدَّرْسُ</b></td><td>نائب فاعل مرفوع بالضمة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('كتب الدرس. الدرس نائب فاعل مرفوع')">🔊 استمع للإعراب</button>
+        </div>
+    </div>
+
+    <!-- 2. قسم المنصوبات -->
+    <div id="sec-mansoobat" class="section-card">
+        <div class="section-header">2. المنصوبات من الأسماء</div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">قَرَأَ الطَّالِبُ كِتَاباً</div>
+            <span class="sentence-badge">المفعول به</span>
+            <div class="explanation"><b>الشرح:</b> اسم منصوب يقع عليه فعل الفاعل.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>قَرَأَ</b></td><td>فعل ماض مبني على الفتح.</td></tr>
+                    <tr><td><b>الطَّالِبُ</b></td><td>فاعل مرفوع بالضمة.</td></tr>
+                    <tr><td><b>كِتَاباً</b></td><td>مفعول به منصوب وعلامة نصبه الفتحة الظاهرة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('قرأ الطالب كتابا. كتابا مفعول به منصوب')">🔊 استمع للإعراب</button>
+        </div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">جَاءَ القَائِدُ مُبْتَسِماً</div>
+            <span class="sentence-badge">الحال</span>
+            <div class="explanation"><b>الشرح:</b> اسم نكرة منصوب يبين هيئة صاحبه عند وقوع الفعل.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>مُبْتَسِماً</b></td><td>حال منصوبة وعلامة نصبها الفتحة الظاهرة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('مبتسما حال منصوبة بالفتحة')">🔊 استمع للإعراب</button>
+        </div>
+    </div>
+
+    <!-- 3. قسم المجرورات -->
+    <div id="sec-majroorat" class="section-card">
+        <div class="section-header">3. المجرورات من الأسماء</div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">ذَهَبْتُ إِلَى المَدْرَسَةِ</div>
+            <span class="sentence-badge">الجر بحرف الجر</span>
+            <div class="explanation"><b>الشرح:</b> الاسم الواقع بعد حروف الجر يجر بالكسرة الظاهرة.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>إِلَى</b></td><td>حرف جر مبني.</td></tr>
+                    <tr><td><b>المَدْرَسَةِ</b></td><td>اسم مجرور بإلى وعلامة جره الكسرة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('المدرسة اسم مجرور بالكسرة')">🔊 استمع للإعراب</button>
+        </div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">هَذَا كِتَابُ الطَّالِبِ</div>
+            <span class="sentence-badge">الجر بالإضافة</span>
+            <div class="explanation"><b>الشرح:</b> المضاف إليه اسم مجرور يوضح المضاف قبله.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>الطَّالِبِ</b></td><td>مضاف إليه مجرور وعلامة جره الكسرة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('الطالب مضاف إليه مجرور')">🔊 استمع للإعراب</button>
+        </div>
+    </div>
+
+    <!-- 4. قسم التوابع -->
+    <div id="sec-tawabi" class="section-card">
+        <div class="section-header">4. التوابع (النعت، العطف، البدل)</div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">جَاءَ الرَّجُلُ الكَرِيمُ</div>
+            <span class="sentence-badge">النعت (الصفة)</span>
+            <div class="explanation"><b>الشرح:</b> النعت يتبع المنعوت في الحركة الإعرابية.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>الكَرِيمُ</b></td><td>نعت (صفة) مرفوع وعلامة رفعه الضمة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('الكريم نعت مرفوع بالضمة')">🔊 استمع للإعراب</button>
+        </div>
+
+        <div class="sentence-item">
+            <div class="sentence-title">حَضَرَ مُحَمَّدٌ وَعَلِيٌّ</div>
+            <span class="sentence-badge">العطف</span>
+            <div class="explanation"><b>الشرح:</b> المعطوف يتبع المعطوف عليه بحرف العطف.</div>
+            <table class="rab-table">
+                <thead><tr><th>الكلمة</th><th>إعرابها</th></tr></thead>
+                <tbody>
+                    <tr><td><b>عَلِيٌّ</b></td><td>معطوف مرفوع وعلامة رفعه الضمة.</td></tr>
+                </tbody>
+            </table>
+            <button class="speak-btn" onclick="speakText('علي معطوف مرفوع بالضمة')">🔊 استمع للإعراب</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // دالة تبديل الأقسام المضبوطة 100%
+    function openTab(tabId, btn) {
+        // إخفاء كافة الأقسام
+        var cards = document.getElementsByClassName("section-card");
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].classList.remove("active");
+        }
+
+        // إلغاء تفعيل كافة المفاتيح
+        var keys = document.getElementsByClassName("key-btn");
+        for (var j = 0; j < keys.length; j++) {
+            keys[j].classList.remove("active");
+        }
+
+        // إظهار القسم المطلوب وتفعيل المفتاح المكبوس
+        document.getElementById(tabId).classList.add("active");
+        btn.classList.add("active");
+    }
+
+    // دالة النطق الصوتي
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            var utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التطبيق التعليمي الذكي المتكامل</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #eef2f7; margin: 0; padding: 20px; text-align: center; }
+        .hidden { display: none !important; }
+        .container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .btn-section { padding: 15px; font-size: 15px; font-weight: bold; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-section:hover { background: #0056b3; }
+        .back-btn { background: #6c757d; margin-top: 20px; padding: 10px 20px; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        input, select { padding: 8px; font-size: 16px; margin: 5px; border-radius: 5px; border: 1px solid #ccc; }
+        button.action-btn { padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .box-list { max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin: 10px 0; text-align: right; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. لوحة التحكم الرئيسية -->
+    <div class="container" id="dashboard">
+        <h2>لوحة التحكم التعليمية الرئيسية</h2>
+        <p>اختر القسم للبدء بالتدريب:</p>
+        <div class="dashboard-grid">
+            <button class="btn-section" onclick="showSection('letters')">تعليم الأحرف (جميع الحروف)</button>
+            <button class="btn-section" onclick="showSection('words')">قسم الكلمات (20 نموذج)</button>
+            <button class="btn-section" onclick="showSection('sentences')">قسم الجمل (20 نموذج)</button>
+            <button class="btn-section" onclick="showSection('chat')">المحادثة مع التطبيق</button>
+            <button class="btn-section" onclick="showSection('math-numbers')">تعليم الأرقام والتركيب</button>
+            <button class="btn-section" onclick="showSection('math-problems')">المسائل الحسابية (20 نموذج)</button>
+            <button class="btn-section" onclick="showSection('exams')" style="grid-column: span 2; background: #28a745;">الاختبارات وتحديد المستوى (20 نموذج)</button>
+        </div>
+    </div>
+
+    <!-- 2. قسم الأحرف (جميع الحروف العربية) -->
+    <div class="container hidden" id="letters-section">
+        <h3>تعليم الأحرف والنطق والتوصيل</h3>
+        <p id="letter-counter">الحرف 1 من 28</p>
+        <div style="font-size: 70px; margin: 15px; color: #007bff; font-weight: bold;" id="current-letter-display">أ</div>
+        <p id="letter-name-display" style="font-size: 18px; color: #555; font-weight: bold;">ألف</p>
+        <button class="action-btn" onclick="playLetterSound()">🔊 استماع للنطق</button>
+        <br><br>
+        <div>
+            <button class="action-btn" onclick="prevLetter()" style="background: #17a2b8;">الحرف السابق</button>
+            <button class="action-btn" onclick="nextLetter()" style="background: #17a2b8;">الحرف التالي</button>
+        </div>
+        <br>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- 3. قسم الكلمات (20 نموذج) -->
+    <div class="container hidden" id="words-section">
+        <h3>قسم الكلمات (إعادة ترتيب الحروف - 20 نموذج)</h3>
+        <p id="word-counter">السؤال 1 من 20</p>
+        <h4 id="word-q" style="color: #333;">رتب حروف كلمة: م - ق - ل - م</h4>
+        <input type="text" id="word-input" placeholder="اكتب الكلمة مرتبة">
+        <button class="action-btn" onclick="checkWord()">تحقق</button>
+        <p id="word-msg" style="font-weight: bold;"></p>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- 4. قسم الجمل (20 نموذج) -->
+    <div class="container hidden" id="sentences-section">
+        <h3>قسم الجمل الكاملة (إعادة ترتيب الجملة - 20 نموذج)</h3>
+        <p id="sentence-counter">السؤال 1 من 20</p>
+        <h4 id="sentence-q" style="color: #333;">رتب الكلمات لتكون جملة صحيحة: [ إلى - يذهب - المدرسة - الطالب ]</h4>
+        <input type="text" id="sentence-input" placeholder="اكتب الجملة مرتبة" style="width: 70%;">
+        <button class="action-btn" onclick="checkSentence()">تحقق</button>
+        <p id="sentence-msg" style="font-weight: bold;"></p>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- 5. قسم المحادثة -->
+    <div class="container hidden" id="chat-section">
+        <h3>محادثة جديدة مع التطبيق</h3>
+        <div class="box-list" id="chat-box">التطبيق: أهلاً بك! اطرح سؤالاً أو تحدث معي باللغة العربية.</div>
+        <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا..." style="width: 70%;">
+        <button class="action-btn" onclick="sendChat()">إرسال</button>
+        <br>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- 6. قسم الأرقام والتركيب -->
+    <div class="container hidden" id="math-numbers-section">
+        <h3>تعليم الأرقام وتركيبها (رقمين، 3، 4 أرقام)</h3>
+        <p>قم بتركيب الأجزاء لتكوين رقم صحيح:</p>
+        <input type="text" id="n1" placeholder="مثال: 5" style="width: 60px;">
+        <input type="text" id="n2" placeholder="4" style="width: 60px;">
+        <input type="text" id="n3" placeholder="3" style="width: 60px;">
+        <input type="text" id="n4" placeholder="2" style="width: 60px;">
+        <br>
+        <button class="action-btn" onclick="combineNums()">تركيب الأرقام</button>
+        <h3 id="combined-out" style="color: #28a745;"></h3>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- 7. المسائل الحسابية (20 نموذج) -->
+    <div class="container hidden" id="math-problems-section">
+        <h3>المسائل الحسابية (جمع، طرح، ضرب، قسمة - 20 نموذج)</h3>
+        <p id="math-counter">السؤال 1 من 20</p>
+        <h4 id="math-q" style="color: #333;">ما ناتج: 5 + 3 = ؟</h4>
+        <input type="number" id="math-ans" placeholder="الناتج">
+        <button class="action-btn" onclick="checkMathProb()">تحقق</button>
+        <p id="math-msg" style="font-weight: bold;"></p>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- 8. قسم الاختبارات وتحديد المستوى (20 نموذج) -->
+    <div class="container hidden" id="exams-section">
+        <h3>الاختبارات وتحديد المستوى (20 نموذج شامل)</h3>
+        <div id="exam-start-box">
+            <p>اختر المستوى الدراسي:</p>
+            <select id="exam-level">
+                <option value="1">المستوى الأول (مبتدئ)</option>
+                <option value="2">المستوى الثاني (متوسط)</option>
+                <option value="3">المستوى الثالث (متقدم)</option>
+            </select>
+            <br>
+            <button class="action-btn" onclick="startExam()" style="margin-top: 10px;">بدء الاختبار الشامل</button>
+        </div>
+        
+        <div id="exam-active-box" class="hidden">
+            <p id="exam-progress">السؤال 1 من 20</p>
+            <h4 id="exam-question">سؤال الاختبار هنا</h4>
+            <input type="text" id="exam-user-ans" placeholder="اكتب إجابتك">
+            <button class="action-btn" onclick="submitExamAnswer()">السؤال التالي</button>
+        </div>
+        <h3 id="exam-final-score" style="color: #007bff;"></h3>
+        <button class="back-btn" onclick="showDashboard()">العودة لوحة التحكم</button>
+    </div>
+
+    <!-- البرمجة والمنطق التشغيلي (JavaScript) -->
+    <script>
+        function showSection(id) {
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(id + '-section');
+            if (target) {
+                target.classList.remove('hidden');
+            }
+        }
+
+        function showDashboard() {
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            const dash = document.getElementById('dashboard');
+            if (dash) {
+                dash.classList.remove('hidden');
+            }
+        }
+
+        // --- 1. بيانات الحروف العربية (28 حرفاً) ---
+        const lettersList = [
+            {char: "أ", name: "ألف"}, {char: "ب", name: "باء"}, {char: "ت", name: "تاء"},
+            {char: "ث", name: "ثاء"}, {char: "ج", name: "جيم"}, {char: "ح", name: "حاء"},
+            {char: "خ", name: "خاء"}, {char: "د", name: "دال"}, {char: "ذ", name: "ذال"},
+            {char: "ر", name: "راء"}, {char: "ز", name: "زاي"}, {char: "س", name: "سين"},
+            {char: "ش", name: "شين"}, {char: "ص", name: "صاد"}, {char: "ض", name: "ضاد"},
+            {char: "ط", name: "طاء"}, {char: "ظ", name: "ظاء"}, {char: "ع", name: "عين"},
+            {char: "غ", name: "غين"}, {char: "ف", name: "فاء"}, {char: "ق", name: "قاف"},
+            {char: "ك", name: "كاف"}, {char: "ل", name: "لام"}, {char: "م", name: "ميم"},
+            {char: "ن", name: "نون"}, {char: "هـ", name: "هاء"}, {char: "و", name: "واو"},
+            {char: "ي", name: "ياء"}
+        ];
+        let letterIdx = 0;
+
+        function updateLetterDisplay() {
+            document.getElementById('letter-counter').innerText = `الحرف ${letterIdx + 1} من ${lettersList.length}`;
+            document.getElementById('current-letter-display').innerText = lettersList[letterIdx].char;
+            document.getElementById('letter-name-display').innerText = lettersList[letterIdx].name;
+        }
+
+        function nextLetter() {
+            if(letterIdx < lettersList.length - 1) {
+                letterIdx++;
+                updateLetterDisplay();
+            } else {
+                letterIdx = 0; // العودة للأول عند النهاية
+                updateLetterDisplay();
+            }
+        }
+
+        function prevLetter() {
+            if(letterIdx > 0) {
+                letterIdx--;
+                updateLetterDisplay();
+            } else {
+                letterIdx = lettersList.length - 1;
+                updateLetterDisplay();
+            }
+        }
+
+        function playLetterSound() {
+            alert(`🔊 نطق الصوت: ${lettersList[letterIdx].char} (${lettersList[letterIdx].name})`);
+        }
+
+        // --- 2. بيانات الكلمات (20 نموذج) ---
+        const wordsList = [
+            {q: "م ق ل م", a: "قلم"}, {q: "ك ت ا ب", a: "كتاب"}, {q: "م د ر س ة", a: "مدرسة"},
+            {q: "ق م ر", a: "قمر"}, {q: "ش م س", a: "شمس"}, {q: "ت ف ا ح", a: "تفاح"},
+            {q: "ق ط و", a: "قطو"}, {q: "ك ل ب", a: "كلب"}, {q: "ب ح ر", a: "بحر"},
+            {q: "ن ه ر", a: "نهر"}, {q: "س م ك", a: "سمك"}, {q: "و ر د", a: "ورد"},
+            {q: "ب ب غ ا ء", a: "ببغاء"}, {q: "ح ا س و ب", a: "حاسوب"}, {q: "ه ا ت ف", a: "هاتف"},
+            {q: "ق ه و ة", a: "قهوة"}, {q: "ش ا ي", a: "شاي"}, {q: "خ ب ز", a: "خبز"},
+            {q: "ب ا ب", a: "باب"}, {q: "ن ا ف ذ ة", a: "نافذة"}
+        ];
+        let wordIdx = 0;
+        
+        function loadWord() {
+            if(wordIdx < wordsList.length) {
+                document.getElementById('word-counter').innerText = `السؤال ${wordIdx + 1} من 20`;
+                document.getElementById('word-q').innerText = `رتب حروف كلمة: ${wordsList[wordIdx].q}`;
+                document.getElementById('word-input').value = "";
+                document.getElementById('word-msg').innerText = "";
+            } else {
+                document.getElementById('word-q').innerText = "أحسنت! أكملت جميع نماذج الكلمات بنجاح.";
+                document.getElementById('word-input').style.display = 'none';
+            }
+        }
+        
+        function checkWord() {
+            let val = document.getElementById('word-input').value.trim();
+            if(val === wordsList[wordIdx].a) {
+                document.getElementById('word-msg').style.color = "green";
+                document.getElementById('word-msg').innerText = "إجابة صحيحة! أحسنت.";
+                wordIdx++;
+                setTimeout(loadWord, 1200);
+            } else {
+                document.getElementById('word-msg').style.color = "red";
+                document.getElementById('word-msg').innerText = "إجابة خاطئة، حاول مرة أخرى.";
+            }
+        }
+
+        // --- 3. بيانات الجمل (20 نموذج) ---
+        const sentencesList = [
+            {q: "[ إلى - يذهب - المدرسة - الطالب ]", a: "يذهب الطالب إلى المدرسة"},
+            {q: "[ الولد - التفاحة - أكل ]", a: "أكل الولد التفاحة"},
+            {q: "[ السماء - في - طائر - طار ]", a: "طار طائر في السماء"},
+            {q: "[ المعلم - الدرس - شرح ]", a: "شرح المعلم الدرس"},
+            {q: "[ الحديقة - في - أزهار - تفتح ]", a: "تفتح أزهار في الحديقة"},
+            {q: "[ السريعة - القطار - وصل ]", a: "وصل القطار السريعة"},
+            {q: "[ الكتاب - الطالب - قرأ ]", a: "قرأ الطالب الكتاب"},
+            {q: "[ الكرة - اللعب - الأطفال - يحب ]", a: "يحب الأطفال اللعب بالكرة"},
+            {q: "[ المطر - ينزل - السماء - من ]", a: "ينزل المطر من السماء"},
+            {q: "[ النهر - جار - الماء ]", a: "ماء النهر جار"},
+            {q: "[ البيت - في - الدفء - نجد ]", a: "نجد الدفء في البيت"},
+            {q: "[ الليل - القمر - يضيء ]", a: "يضيء القمر الليل"},
+            {q: "[ الصباح - في - العصافير - تغرد ]", a: "تغرد العصافير في الصباح"},
+            {q: "[ البحر - سمك - يعيش - في ]", a: "يعيش السمك في البحر"},
+            {q: "[ الصحراء - الجمل - سفينة - تعتبر ]", a: "تعتبر سفينة الجمل في الصحراء"},
+            {q: "[ الشتاء - فصل - بارد ]", a: "فصل الشتاء بارد"},
+            {q: "[ الصيف - حرارة - شديدة ]", a: "حرارة الصيف شديدة"},
+            {q: "[ الرياضة - للجسم - مفيدة ]", a: "الرياضة مفيدة للجسم"},
+            {q: "[ النظافة - الإيمان - من ]", a: "النظافة من الإيمان"},
+            {q: "[ العلم - نور - والجهل - ظلام ]", a: "العلم نور والجهل ظلام"}
+        ];
+        let sentIdx = 0;
+        
+        function loadSentence() {
+            if(sentIdx < sentencesList.length) {
+                document.getElementById('sentence-counter').innerText = `السؤال ${sentIdx + 1} من 20`;
+                document.getElementById('sentence-q').innerText = `رتب الكلمات لتكون جملة: ${sentencesList[sentIdx].q}`;
+                document.getElementById('sentence-input').value = "";
+                document.getElementById('sentence-msg').innerText = "";
+            } else {
+                document.getElementById('sentence-q').innerText = "رائع! أنهت جميع نماذج الجمل.";
+                document.getElementById('sentence-input').style.display = 'none';
+            }
+        }
+        
+        function checkSentence() {
+            let val = document.getElementById('sentence-input').value.trim();
+            if(val === sentencesList[sentIdx].a) {
+                document.getElementById('sentence-msg').style.color = "green";
+                document.getElementById('sentence-msg').innerText = "ترتيب صحيح!";
+                sentIdx++;
+                setTimeout(loadSentence, 1200);
+            } else {
+                document.getElementById('sentence-msg').style.color = "red";
+                document.getElementById('sentence-msg').innerText = "خطأ في الترتيب، أعد المحاولة.";
+            }
+        }
+
+        // --- 4. المحادثة ---
+        function sendChat() {
+            let txt = document.getElementById('chat-input').value.trim();
+            if(txt) {
+                let box = document.getElementById('chat-box');
+                box.innerHTML += `<br><b>أنت:</b> ${txt}<br><b>التطبيق:</b> لقد فهمت قولك: "${txt}"، واصل التدريب!`;
+                document.getElementById('chat-input').value = "";
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
+        // --- 5. تركيب الأرقام ---
+        function combineNums() {
+            let p1 = document.getElementById('n1').value;
+            let p2 = document.getElementById('n2').value;
+            let p3 = document.getElementById('n3').value;
+            let p4 = document.getElementById('n4').value;
+            let combined = p1 + p2 + p3 + p4;
+            document.getElementById('combined-out').innerText = "الرقم المركب النهائي: " + combined;
+        }
+
+        // --- 6. المسائل الحسابية (20 نموذج) ---
+        const mathList = [
+            {q: "5 + 3", a: "8"}, {q: "10 - 4", a: "6"}, {q: "2 × 3", a: "6"}, {q: "8 ÷ 2", a: "4"},
+            {q: "7 + 5", a: "12"}, {q: "15 - 9", a: "6"}, {q: "4 × 4", a: "16"}, {q: "20 ÷ 5", a: "4"},
+            {q: "12 + 8", a: "20"}, {q: "30 - 10", a: "20"}, {q: "5 × 5", a: "25"}, {q: "18 ÷ 3", a: "6"},
+            {q: "11 + 9", a: "20"}, {q: "50 - 25", a: "25"}, {q: "3 × 6", a: "18"}, {q: "24 ÷ 4", a: "6"},
+            {q: "14 + 16", a: "30"}, {q: "40 - 15", a: "25"}, {q: "7 × 2", a: "14"}, {q: "36 ÷ 6", a: "6"}
+        ];
+        let mathIdx = 0;
+        
+        function loadMathProb() {
+            if(mathIdx < mathList.length) {
+                document.getElementById('math-counter').innerText = `السؤال ${mathIdx + 1} من 20`;
+                document.getElementById('math-q').innerText = `ما ناتج: ${mathList[mathIdx].q} = ؟`;
+                document.getElementById('math-ans').value = "";
+                document.getElementById('math-msg').innerText = "";
+            } else {
+                document.getElementById('math-q').innerText = "أحسنت! أتممت جميع المسائل الحسابية.";
+                document.getElementById('math-ans').style.display = 'none';
+            }
+        }
+        
+        function checkMathProb() {
+            let val = document.getElementById('math-ans').value.trim();
+            if(val === mathList[mathIdx].a) {
+                document.getElementById('math-msg').style.color = "green";
+                document.getElementById('math-msg').innerText = "إجابة صحيحة!";
+                mathIdx++;
+                setTimeout(loadMathProb, 1000);
+            } else {
+                document.getElementById('math-msg').style.color = "red";
+                document.getElementById('math-msg').innerText = "إجابة خاطئة، جرب مجدداً.";
+            }
+        }
+
+        // --- 7. الاختبارات وتحديد المستوى (20 نموذج) ---
+        const examList = [
+            {q: "ما الحرف الأول من كلمة أسد؟", a: "أ"}, {q: "كم ناتج 2 + 2؟", a: "4"},
+            {q: "رتب حروف: ق ل م", a: "قلم"}, {q: "ناتج 10 - 5 = ؟", a: "5"},
+            {q: "ما هو جمع كلمة كتاب؟", a: "كتب"}, {q: "ناتج 3 × 3 = ؟", a: "9"},
+            {q: "ما مضاد كلمة طويل؟", a: "قصير"}, {q: "ناتج 12 ÷ 4 = ؟", a: "3"},
+            {q: "رتب: [ البيت - في - الولد ]", a: "الولد في البيت"}, {q: "ما لون السماء الصافية؟", a: "ازرق"},
+            {q: "كم عدد أيام الأسبوع؟", a: "7"}, {q: "ناتج 9 + 9 = ؟", a: "18"},
+            {q: "ما هو الحيوان الأليف المعروف بـ مواء؟", a: "قطة"}, {q: "ناتج 20 - 10 = ؟", a: "10"},
+            {q: "عاصمة مصر هي؟", a: "القاهرة"}, {q: "فصل حرارته شديدة؟", a: "الصيف"},
+            {q: "عدد أصابع اليد الواحدة؟", a: "5"}, {q: "ناتج 6 × 2 = ؟", a: "12"},
+            {q: "مفتاح الدخول يسمى؟", a: "مفتاح"}, {q: "أتمم: النظافة من ...", a: "الإيمان"}
+        ];
+        let examIdx = 0, score = 0;
+        
+        function startExam() {
+            document.getElementById('exam-start-box').classList.add('hidden');
+            document.getElementById('exam-active-box').classList.remove('hidden');
+            examIdx = 0; score = 0;
+            loadExamQuestion();
+        }
+        
+        function loadExamQuestion() {
+            if(examIdx < examList.length) {
+                document.getElementById('exam-progress').innerText = `سؤال ${examIdx + 1} من 20`;
+                document.getElementById('exam-question').innerText = examList[examIdx].q;
+                document.getElementById('exam-user-ans').value = "";
+            } else {
+                document.getElementById('exam-active-box').classList.add('hidden');
+                document.getElementById('exam-final-score').innerText = `انتهى الاختبار! درجتك النهائية هي: ${score} من 20`;
+            }
+        }
+        
+        function submitExamAnswer() {
+            let val = document.getElementById('exam-user-ans').value.trim();
+            if(val === examList[examIdx].a) {
+                score++;
+            }
+            examIdx++;
+            loadExamQuestion();
+        }
+
+        // تشغيل التحميل الأولي عند فتح الصفحة
+        window.onload = function() {
+            updateLetterDisplay();
+            loadWord();
+            loadSentence();
+            loadMathProb();
+        };
+    </script>
+</body>
+</html>

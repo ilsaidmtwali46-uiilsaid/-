@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الحروف مع الكلمات المشكولة والنطق</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 15px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .letter-card {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .letter-header {
+            background-color: #2b6cb0;
+            color: white;
+            padding: 10px 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border-bottom: 1px solid #edf2f7;
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-size: 15px;
+        }
+        .haraka-cell {
+            font-size: 26px;
+            font-weight: bold;
+            color: #c53030;
+            width: 15%;
+        }
+        .words-cell {
+            text-align: right;
+            padding-right: 20px;
+            width: 60%;
+        }
+        .word-tag {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .action-cell {
+            width: 25%;
+        }
+        button.speak-btn {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+        button.speak-btn:hover {
+            background-color: #2f855a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>الحروف الهجائية مع 5 كلمات مشكولة تحريكاً كاملاً لكل تشكيل</h2>
+    <div class="subtitle" id="totalInfo">جاري تحميل البيانات...</div>
+
+    <div id="contentArea"></div>
+</div>
+
+<script>
+    // مصفوفة الحروف مع الكلمات المشكولة بوضوح لكل حركة
+    const data = [
+        {
+            letter: "أ - الألف",
+            forms: [
+                { symbol: "أَ", name: "فتحة", words: ["أَسَدٌ", "أَرْنَبٌ", "أَمَلٌ", "أَسْمَاءُ", "أَحْمَدُ"] },
+                { symbol: "إِ", name: "كسرة", words: ["إِبْرِيقٌ", "إِبَرَةٌ", "إِبِلٌ", "إِيمَانُ", "إِحْسَانٌ"] },
+                { symbol: "أُ", name: "ضمة", words: ["أُذُنٌ", "أُمٌّ", "أُسْرَةٌ", "أُخْتٌ", "أُسْتَاذٌ"] }
+            ]
+        },
+        {
+            letter: "ب - الباء",
+            forms: [
+                { symbol: "بَ", name: "فتحة", words: ["بَطَّةٌ", "بَابٌ", "بَيْتٌ", "بَحْرٌ", "بَلَدٌ"] },
+                { symbol: "بِ", name: "كسرة", words: ["بِنْتٌ", "بِطِّيخٌ", "بِئْرٌ", "بِسَاطٌ", "بِطَاقَةٌ"] },
+                { symbol: "بُ", name: "ضمة", words: ["بُرْتُقَالٌ", "بُومَةٌ", "بُرْجٌ", "بُسْتَانٌ", "بُلْبُلٌ"] }
+            ]
+        },
+        {
+            letter: "ت - التاء",
+            forms: [
+                { symbol: "تَ", name: "فتحة", words: ["تَمْرٌ", "تَاجٌ", "تِمْسَاحٌ", "تَفَاحَةٌ", "تَمْسِيحٌ"] },
+                { symbol: "تِ", name: "كسرة", words: ["تِينٌ", "تِلْفَازٌ", "تِلْمِيذٌ", "تِمْثَالٌ", "تِبْنٌ"] },
+                { symbol: "تُ", name: "ضمة", words: ["تُفَّاحٌ", "تُرَابٌ", "تُجَّارٌ", "تُحْفَةٌ", "تُرْتُورٌ"] }
+            ]
+        },
+        {
+            letter: "ث - الثاء",
+            forms: [
+                { symbol: "ثَ", name: "فتحة", words: ["ثَعْلَبٌ", "ثَوْمٌ", "ثَوْبٌ", "ثَلْجٌ", "ثَمَرٌ"] },
+                { symbol: "ثِ", name: "كسرة", words: ["ثِمَارٌ", "ثِقَةٌ", "ثِيَابٌ", "ثِقَلٌ", "ثِرَاءٌ"] },
+                { symbol: "ثُ", name: "ضمة", words: ["ثُعْبَانٌ", "ثُلُثٌ", "ثُرَيَّا", "ثُقُوبٌ", "ثُعْلَبٌ"] }
+            ]
+        },
+        {
+            letter: "ج - الجيم",
+            forms: [
+                { symbol: "جَ", name: "فتحة", words: ["جَمَلٌ", "جَبَلٌ", "جَرَسٌ", "جَزَرٌ", "جَوَّالٌ"] },
+                { symbol: "جِ", name: "كسرة", words: ["جِدَارٌ", "جِسْرٌ", "جِلْدٌ", "جِهَازٌ", "جِنْيَةٌ"] },
+                { symbol: "جُ", name: "ضمة", words: ["جُبْنٌ", "جُمُعَةٌ", "جُحَا", "جُرْحٌ", "جُيُوشٌ"] }
+            ]
+        },
+        {
+            letter: "ح - الحاء",
+            forms: [
+                { symbol: "حَ", name: "فتحة", words: ["حَمَامَةٌ", "حَقِيبَةٌ", "حَلِيبٌ", "حَمَاسٌ", "حَاسُوبٌ"] },
+                { symbol: "حِ", name: "كسرة", words: ["حِمَارٌ", "حِصَانٌ", "حِذَاءٌ", "حِبْرٌ", "حِصْنٌ"] },
+                { symbol: "حُ", name: "ضمة", words: ["حُوتٌ", "حُلْمٌ", "حُقْنَةٌ", "حُرَّةٌ", "حُبُوبٌ"] }
+            ]
+        },
+        {
+            letter: "خ - الخاء",
+            forms: [
+                { symbol: "خَ", name: "فتحة", words: ["خَرُوفٌ", "خُبْزٌ", "خَشَبٌ", "خَاتَمٌ", "خَرِيطَةٌ"] },
+                { symbol: "خِ", name: "كسرة", words: ["خِيَارٌ", "خِزَانَةٌ", "خِطَابٌ", "خِدْمَةٌ", "خِلَالٌ"] },
+                { symbol: "خُ", name: "ضمة", words: ["خُفَّاشٌ", "خُوذَةٌ", "خُطُوَاتٌ", "خُضَارٌ", "خُبُوزٌ"] }
+            ]
+        },
+        {
+            letter: "د - الدال",
+            forms: [
+                { symbol: "دَ", name: "فتحة", words: ["دَجَاجَةٌ", "دَفْتَرٌ", "دَارٌ", "دَرَّاجَةٌ", "دَلِيلٌ"] },
+                { symbol: "دِ", name: "كسرة", words: ["دِهَانٌ", "دِرْعٌ", "دِينَارٌ", "دِفْءٌ", "دِلَاكٌ"] },
+                { symbol: "دُ", name: "ضمة", words: ["دُبٌّ", "دُخَانٌ", "دُرَّةٌ", "دُكَّانٌ", "دُولَابٌ"] }
+            ]
+        },
+        {
+            letter: "ذ - الذال",
+            forms: [
+                { symbol: "ذَ", name: "فتحة", words: ["ذَهَبٌ", "ذَيْلٌ", "ذَكَرٌ", "ذَاقَ", "ذَكِيٌّ"] },
+                { symbol: "ذِ", name: "كسرة", words: ["ذِئْبٌ", "ذِكْرَى", "ذِرَاعٌ", "ذِهْنٌ", "ذِمَّةٌ"] },
+                { symbol: "ذُ", name: "ضمة", words: ["ذُرَةٌ", "ذُبَابَةٌ", "ذُنُوبٌ", "ذُبُولٌ", "ذُرُوعٌ"] }
+            ]
+        },
+        {
+            letter: "ر - الراء",
+            forms: [
+                { symbol: "رَ", name: "فتحة", words: ["رَجُلٌ", "رَأْسٌ", "رَمْلٌ", "رَمَّانٌ", "رِيشَةٌ"] },
+                { symbol: "رِ", name: "كسرة", words: ["رِجْلٌ", "رِسَالَةٌ", "رِيَاحٌ", "رِكَابٌ", "رِعَايَةٌ"] },
+                { symbol: "رُ", name: "ضمة", words: ["رُمَّانٌ", "رُكْبَةٌ", "رُخَامٌ", "رُطَبٌ", "رُؤْيَةٌ"] }
+            ]
+        },
+        {
+            letter: "ز - الزاي",
+            forms: [
+                { symbol: "زَ", name: "فتحة", words: ["زَرَافَةٌ", "زَهْرَةٌ", "زَيْتٌ", "زَاوِيَةٌ", "زَمَانٌ"] },
+                { symbol: "زِ", name: "كسرة", words: ["زِرٌّ", "زِيَارَةٌ", "زِينَةٌ", "زِرَاعَةٌ", "زِيٌّ"] },
+                { symbol: "زُ", name: "ضمة", words: ["زُجَاجٌ", "زُهُورٌ", "زُبْدَةٌ", "زُلَالٌ", "زُحَافٌ"] }
+            ]
+        },
+        {
+            letter: "س - السين",
+            forms: [
+                { symbol: "سَ", name: "فتحة", words: ["سَمَكَةٌ", "سَيَّارَةٌ", "سَاعَةٌ", "سَفِينَةٌ", "سَحَابٌ"] },
+                { symbol: "سِ", name: "كسرة", words: ["سِكِّينٌ", "سِرْوَالٌ", "سِتَارٌ", "سِحْرٌ", "سِمَاكٌ"] },
+                { symbol: "سُ", name: "ضمة", words: ["سُلَحْفَاةٌ", "سُكَّرٌ", "سُورٌ", "سُلَّمٌ", "سُيُوفٌ"] }
+            ]
+        },
+        {
+            letter: "ش - الشين",
+            forms: [
+                { symbol: "شَ", name: "فتحة", words: ["شَمْسٌ", "شَجَرَةٌ", "شَمْعَةٌ", "شَارِعٌ", "شَالَكٌ"] },
+                { symbol: "شِ", name: "كسرة", words: ["شِتَاءٌ", "شِرَاعٌ", "شِعْرٌ", "شِفَاءٌ", "شِكَايَةٌ"] },
+                { symbol: "شُ", name: "ضمة", words: ["شُعْلَةٌ", "شُرْطَةٌ", "شُبَّاكٌ", "شُيُوخٌ", "شُكْرٌ"] }
+            ]
+        },
+        {
+            letter: "ص - الصاد",
+            forms: [
+                { symbol: "صَ", name: "فتحة", words: ["صَقْرٌ", "صَابُونٌ", "صَحْنٌ", "صَبَاحٌ", "صَدِيقٌ"] },
+                { symbol: "صِ", name: "كسرة", words: ["صِنَّارَةٌ", "صِينِيَّةٌ", "صِغَرٌ", "صِيَامٌ", "صِفَةٌ"] },
+                { symbol: "صُ", name: "ضمة", words: ["صُنْدُوقٌ", "صُورَةٌ", "صُوفٌ", "صُبْحٌ", "صُورِيٌّ"] }
+            ]
+        },
+        {
+            letter: "ض - الضاد",
+            forms: [
+                { symbol: "ضَ", name: "فتحة", words: ["ضَبَابٌ", "ضَوْءٌ", "ضَفْدَعٌ", "ضَابِطٌ", "ضَحِكَ"] },
+                { symbol: "ضِ", name: "كسرة", words: ["ضِرْسٌ", "ضِيَافَةٌ", "ضِمَادٌ", "ضِيَاءٌ", "ضِعَافٌ"] },
+                { symbol: "ضُ", name: "ضمة", words: ["ضُبَّاطٌ", "ضُحًى", "ضُرُوبٌ", "ضُعَفَاءُ", "ضُبُوعٌ"] }
+            ]
+        },
+        {
+            letter: "ط - الطاء",
+            forms: [
+                { symbol: "طَ", name: "فتحة", words: ["طَبِيبٌ", "طَائِرَةٌ", "طَمَاطِمُ", "طَرِيقٌ", "طَاوِلَةٌ"] },
+                { symbol: "طِ", name: "كسرة", words: ["طِفْلٌ", "طِينٌ", "طِلَاءٌ", "طِبْقٌ", "طِقْسٌ"] },
+                { symbol: "طُ", name: "ضمة", words: ["طُيُورٌ", "طُوبٌ", "طُرُوقٌ", "طُحِينٌ", "طُفُولَةٌ"] }
+            ]
+        },
+        {
+            letter: "ظ - الظاء",
+            forms: [
+                { symbol: "ظَ", name: "فتحة", words: ["ظَبْيٌ", "ظَرْفٌ", "ظَلَامٌ", "ظَاهِرٌ", "ظَابِطٌ"] },
+                { symbol: "ظِ", name: "كسرة", words: ["ظِلٌّ", "ظِلَالٌ", "ظِفَارٌ", "ظِيرٌ", "ظِفْرٌ"] },
+                { symbol: "ظُ", name: "ضمة", words: ["ظُفْرٌ", "ظُهْرٌ", "ظُلْمَةٌ", "ظُرُوفٌ", "ظُلُمَاتٌ"] }
+            ]
+        },
+        {
+            letter: "ع - العين",
+            forms: [
+                { symbol: "عَ", name: "فتحة", words: ["عَلَمٌ", "عَيْنٌ", "عَنْكَبُوتٌ", "عَاصِمَةٌ", "عَمَلٌ"] },
+                { symbol: "عِ", name: "كسرة", words: ["عِنَبٌ", "عِمَارَةٌ", "عِطْرٌ", "عِلْمٌ", "عِذَابٌ"] },
+                { symbol: "عُ", name: "ضمة", words: ["عُشٌّ", "عُودٌ", "عُصْفُورٌ", "عُمْرٌ", "عُلْبَةٌ"] }
+            ]
+        },
+        {
+            letter: "غ - الغين",
+            forms: [
+                { symbol: "غَ", name: "فتحة", words: ["غَزَالٌ", "غَابَةٌ", "غَمَامٌ", "غَادَةٌ", "غَسِيلٌ"] },
+                { symbol: "غِ", name: "كسرة", words: ["غِلَافٌ", "غَزْلٌ", "غِذَاءٌ", "غِرْبَانٌ", "غِيَابٌ"] },
+                { symbol: "غُ", name: "ضمة", words: ["غُرَابٌ", "غُرْفَةٌ", "غُبَارٌ", "غُصْنٌ", "غُلَامٌ"] }
+            ]
+        },
+        {
+            letter: "ف - الفاء",
+            forms: [
+                { symbol: "فَ", name: "فتحة", words: ["فَرَاشَةٌ", "فِيلٌ", "فَرَسٌ", "فَاكِهَةٌ", "فَحْمٌ"] },
+                { symbol: "فِ", name: "كسرة", words: ["فِيلٌ", "فِنْجَانٌ", "فِرَاشٌ", "فِكْرَةٌ", "فِضَّةٌ"] },
+                { symbol: "فُ", name: "ضمة", words: ["فُلٌّ", "فُرْنٌ", "فُسْتَانٌ", "فُؤَادٌ", "فُدَاءٌ"] }
+            ]
+        },
+        {
+            letter: "ق - القاف",
+            forms: [
+                { symbol: "قَ", name: "فتحة", words: ["قَلَمٌ", "قَمَرٌ", "قَارِبٌ", "قِطَارٌ", "قِطٌّ"] },
+                { symbol: "قِ", name: "كسرة", words: ["قِطٌّ", "قِرْدٌ", "قِطَارٌ", "قِشْرَةٌ", "قِصَّةٌ"] },
+                { symbol: "قُ", name: "ضمة", words: ["قُبَّعَةٌ", "قُفْلٌ", "قُرْآنٌ", "قُدْسٌ", "قُبْلَةٌ"] }
+            ]
+        },
+        {
+            letter: "ك - الكاف",
+            forms: [
+                { symbol: "كَ", name: "فتحة", words: ["كَلْبٌ", "كِتَابٌ", "كَعْكٌ", "كَرَّاسَةٌ", "كِيسٌ"] },
+                { symbol: "كِ", name: "كسرة", words: ["كِتَابٌ", "كِسَاءٌ", "كِلْيَةٌ", "كِبَارٌ", "كِتَابَةٌ"] },
+                { symbol: "كُ", name: "ضمة", words: ["كُرَةٌ", "كُرْسِيٌّ", "كُوبٌ", "كُتُبٌ", "كُرْدِيٌّ"] }
+            ]
+        },
+        {
+            letter: "ل - اللام",
+            forms: [
+                { symbol: "لَ", name: "فتحة", words: ["لَمْبَةٌ", "لَحْمٌ", "لَبَنٌ", "لَايِمٌ", "لَحَافٌ"] },
+                { symbol: "لِ", name: "كسرة", words: ["لِسَانٌ", "لِبَاسٌ", "لِصٌّ", "لِحَافٌ", "لِقَاءٌ"] },
+                { symbol: "لُ", name: "ضمة", words: ["لُعْبَةٌ", "لُؤْلُؤٌ", "لَيْمُونٌ", "لُغَةٌ", "لُبَانٌ"] }
+            ]
+        },
+        {
+            letter: "م - الميم",
+            forms: [
+                { symbol: "مَ", name: "فتحة", words: ["مَوْزٌ", "مَسْجِدٌ", "مَلِكٌ", "مَحَطَّةٌ", "مِقَصٌّ"] },
+                { symbol: "مِ", name: "كسرة", words: ["مِقَصٌّ", "مِفْتَاحٌ", "مِظَلَّةٌ", "مِنْشَفَةٌ", "مِعْطَفٌ"] },
+                { symbol: "مُ", name: "ضمة", words: ["مُهَنْدِسٌ", "مُعَلِّمٌ", "مُصْحَفٌ", "مُرُورٌ", "مُدِيرٌ"] }
+            ]
+        },
+        {
+            letter: "ن - النون",
+            forms: [
+                { symbol: "نَ", name: "فتحة", words: ["نَجْمَةٌ", "نَخْلَةٌ", "نَهْرٌ", "نَظَّارَةٌ", "نَارٌ"] },
+                { symbol: "نِ", name: "كسرة", words: ["نِسْرٌ", "نِظَارَةٌ", "نِعْمَةٌ", "نِقَاشٌ", "نِهَايَةٌ"] },
+                { symbol: "نُ", name: "ضمة", words: ["نُجُومٌ", "نُورٌ", "نُقُودٌ", "نُورِيرٌ", "نُسْخَةٌ"] }
+            ]
+        },
+        {
+            letter: "هـ - الهاء",
+            forms: [
+                { symbol: "هَ", name: "فتحة", words: ["هَرَمٌ", "هَدِيَّةٌ", "هَاتِفٌ", "هِلَالٌ", "هَدَفٌ"] },
+                { symbol: "هـِ", name: "كسرة", words: ["هِلَالٌ", "هِمَّةٌ", "هِيَامٌ", "هِجْرَةٌ", "هِنْدٌ"] },
+                { symbol: "هـُ", name: "ضمة", words: ["هُدْهُدٌ", "هُدُوءٌ", "هُنَا", "هُتَافٌ", "هُدْنَةٌ"] }
+            ]
+        },
+        {
+            letter: "و - الواو",
+            forms: [
+                { symbol: "وَ", name: "فتحة", words: ["وَرَدَةٌ", "وَلَدٌ", "وَجْهٌ", "وَسَادَةٌ", "وَقْتٌ"] },
+                { symbol: "وِ", name: "كسرة", words: ["وِسَامٌ", "وِعَاءٌ", "وِلَادَةٌ", "وِشَاحٌ", "وِقَايَةٌ"] },
+                { symbol: "وُ", name: "ضمة", words: ["وُرُودٌ", "وُضُوءٌ", "وُجُوهٌ", "وُصُولٌ", "وُجُودٌ"] }
+            ]
+        },
+        {
+            letter: "ي - الياء",
+            forms: [
+                { symbol: "يَ", name: "فتحة", words: ["يَدٌ", "يَاسَمِينٌ", "يَمَامَةٌ", "يَمِينٌ", "يَتِيمٌ"] },
+                { symbol: "يِ", name: "كسرة", words: ["يَنَايِرُ", "يَقِينٌ", "يَادَارُ", "يِبْسٌ", "يِيخٌ"] },
+                { symbol: "يُ", name: "ضمة", words: ["يُوسُفِيٌّ", "يُنَابِيعُ", "يُسْرٌ", "يُوسُفُ", "يُونَانُ"] }
+            ]
+        }
+    ];
+
+    const contentArea = document.getElementById("contentArea");
+    const totalInfo = document.getElementById("totalInfo");
+
+    let totalCombinations = 0;
+    let totalWordsCount = 0;
+
+    data.forEach((item) => {
+        let cardHTML = `
+            <div class="letter-card">
+                <div class="letter-header">
+                    <span>${item.letter}</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الحركة</th>
+                            <th>5 كلمات مشكولة بالكامل</th>
+                            <th>النطق الصوتي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        item.forms.forEach(form => {
+            totalCombinations++;
+            totalWordsCount += form.words.length;
+            const wordsJoined = form.words.map(w => `<span class="word-tag">${w}</span>`).join(" ");
+
+            cardHTML += `
+                <tr>
+                    <td class="haraka-cell">${form.symbol} <br><small style="font-size:12px; color:#718096;">(${form.name})</small></td>
+                    <td class="words-cell">${wordsJoined}</td>
+                    <td class="action-cell">
+                        <button class="speak-btn" onclick="speakSequence('${form.symbol}', ['${form.words.join("','")}'])">
+                            🔊 استمع بالتشكيل
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        cardHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        contentArea.innerHTML += cardHTML;
+    });
+
+    totalInfo.innerHTML = `يحتوي التطبيق على <b>28 حرفاً</b> | <b>${totalCombinations} تشكيلاً</b> | <b>${totalWordsCount} كلمة مشكولة تحريكاً كاملاً</b> مع النطق الصوتي.`;
+
+    // وظيفة النطق الصوتي للكلمات المشكولة
+    function speakSequence(symbol, wordsArray) {
+        if (!('speechSynthesis' in window)) {
+            alert("عذراً، ميزة النطق غير مدعومة في جهازك.");
+            return;
+        }
+
+        window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+
+        // 1. نطق الحرف والتشكيل
+        let utterSymbol = new SpeechSynthesisUtterance(symbol);
+        utterSymbol.lang = 'ar-SA';
+        utterSymbol.rate = 0.8;
+        window.speechSynthesis.speak(utterSymbol);
+
+        // 2. نطق الكلمات المشكولة تباعاً
+        wordsArray.forEach(word => {
+            let utterWord = new SpeechSynthesisUtterance(word);
+            utterWord.lang = 'ar-SA';
+            utterWord.rate = 0.85;
+            window.speechSynthesis.speak(utterWord);
+        });
+    }
+</script>
+
+</body>
+</html>

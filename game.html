@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الحرف الناقص لجميع الحروف الهجائية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 15px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 650px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h2 {
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+        .score-board {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        .game-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .word-display {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2b6cb0;
+            letter-spacing: 3px;
+            margin: 20px 0;
+        }
+        .hint {
+            font-size: 16px;
+            color: #4a5568;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            background-color: #ffffff;
+            color: #2b6cb0;
+            border: 2px solid #3182ce;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            background-color: #ebf8ff;
+            transform: translateY(-2px);
+        }
+        .message {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 35px;
+        }
+        .success { color: #38a169; }
+        .error { color: #e53e3e; }
+        .next-btn {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            display: none;
+        }
+        .next-btn:hover { background-color: #2b6cb0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>لعبة إكمال الحرف الناقص لجميع الحروف الهجائية</h2>
+    <div class="score-board">السؤال: <span id="currentQ">1</span> من <span id="totalQ"></span> | النقاط: <span id="score">0</span></div>
+
+    <div class="game-card">
+        <div class="hint" id="hintText">اختر الحرف المناسب لتكملة الكلمة:</div>
+        <div class="word-display" id="wordDisplay">_ بَرَةٌ</div>
+        
+        <div class="options-grid" id="optionsContainer">
+            <!-- خيارات الحروف -->
+        </div>
+
+        <div class="message" id="messageBox"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">السؤال التالي ➡️</button>
+    </div>
+</div>
+
+<script>
+    // قائمة تشمل الـ 28 حرفاً مع تغير مكان الحرف الناقص في الكلمة (أول، وسط، آخر)
+    const questions = [
+        { wordWithBlank: "أَ_دٌ", missingChar: "سَـ", options: ["سَـ", "بَـ", "تَـ"], fullWord: "أَسَدٌ" },
+        { wordWithBlank: "بَ_رَةٌ", missingChar: "قَـ", options: ["قَـ", "فَـ", "كَـ"], fullWord: "بَقَرَةٌ" },
+        { wordWithBlank: "تَمْ_مٌ / تَمْ_", missingChar: "رٌ", options: ["ـرٌ", "ـدٌ", "ـلٌ"], fullWord: "تَمْرٌ" },
+        { wordWithBlank: "ثَ_لْبٌ", missingChar: "عَـ", options: ["عَـ", "ثَـ", "حَـ"], fullWord: "ثَعْلَبٌ" }, // تم تعديلها لتوضيح الحرف الناقص بدقة
+        { wordWithBlank: "جَ_لٌ", missingChar: "مَـ", options: ["مَـ", "بَـ", "حَـ"], fullWord: "جَمَلٌ" },
+        { wordWithBlank: "حَمَا_ةٌ", missingChar: "مَـ", options: ["ـمَـ", "ـبَـ", "ـتَـ"], fullWord: "حَمَامَةٌ" },
+        { wordWithBlank: "خَ_وُفٌ / خَرُو_", missingChar: "فٌ", options: ["ـفٌ", "ـقٌ", "ـمٌ"], fullWord: "خَرُوفٌ" },
+        { wordWithBlank: "_َجَاجَةٌ", missingChar: "دَ", options: ["دَ", "رَ", "زَ"], fullWord: "دَجَاجَةٌ" },
+        { wordWithBlank: "ذَهَ_", missingChar: "بٌ", options: ["ـبٌ", "ـتٌ", "ـثٌ"], fullWord: "ذَهَبٌ" },
+        { wordWithBlank: "رَجُ_", missingChar: "لٌ", options: ["ـلٌ", "ـمٌ", "ـنٌ"], fullWord: "رَجُلٌ" },
+        { wordWithBlank: "زَرَافَ_", missingChar: "ةٌ", options: ["ةٌ", "تٌ", "هٌ"], fullWord: "زَرَافَةٌ" },
+        { wordWithBlank: "سَمَ_ةٌ", missingChar: "كَـ", options: ["ـكَـ", "ـلَـ", "ـمَـ"], fullWord: "سَمَكَةٌ" },
+        { wordWithBlank: "شَ_سٌ", missingChar: "مَـ", options: ["ـمَـ", "ـبَـ", "ـتَـ"], fullWord: "شَمْسٌ" },
+        { wordWithBlank: "صَقْ_", missingChar: "رٌ", options: ["ـرٌ", "ـزٌ", "ـسٌ"], fullWord: "صَقْرٌ" },
+        { wordWithBlank: "ضِ_سٌ", missingChar: "رْ", options: ["ـرْـ", "ـلْـ", "ـنْـ"], fullWord: "ضِرْسٌ" },
+        { wordWithBlank: "طَبِي_", missingChar: "بٌ", options: ["ـبٌ", "ـتٌ", "ـثٌ"], fullWord: "طَبِيبٌ" },
+        { wordWithBlank: "ظَرْ_", missingChar: "فٌ", options: ["ـفٌ", "ـقٌ", "ـمٌ"], fullWord: "ظَرْفٌ" },
+        { wordWithBlank: "عَلَ_", missingChar: "مٌ", options: ["ـمٌ", "ـنٌ", "ـلٌ"], fullWord: "عَلَمٌ" },
+        { wordWithBlank: "غَزَا_", missingChar: "لٌ", options: ["ـلٌ", "ـمٌ", "ـنٌ"], fullWord: "غَزَالٌ" },
+        { wordWithBlank: "فَرَاشَ_", missingChar: "ةٌ", options: ["ةٌ", "تٌ", "هٌ"], fullWord: "فَرَاشَةٌ" },
+        { wordWithBlank: "قَمَ_", missingChar: "رٌ", options: ["ـرٌ", "ـدٌ", "ـلٌ"], fullWord: "قَمَرٌ" },
+        { wordWithBlank: "كِتَا_", missingChar: "بٌ", options: ["ـبٌ", "ـتٌ", "ـثٌ"], fullWord: "كِتَابٌ" },
+        { wordWithBlank: "لَحْ_", missingChar: "مٌ", options: ["ـمٌ", "ـنٌ", "ـلٌ"], fullWord: "لَحْمٌ" },
+        { wordWithBlank: "مَوْ_", missingChar: "زٌ", options: ["ـزٌ", "ـرٌ", "ـسٌ"], fullWord: "مَوْزٌ" },
+        { wordWithBlank: "نَجْمَ_", missingChar: "ةٌ", options: ["ةٌ", "تٌ", "هٌ"], fullWord: "نَجْمَةٌ" },
+        { wordWithBlank: "هَر_مٌ", missingChar: "ـرَـ", options: ["ـرَـ", "ـدَـ", "ـزَـ"], fullWord: "هَرَمٌ" },
+        { wordWithBlank: "وَلَ_", missingChar: "دٌ", options: ["ـدٌ", "ـرٌ", "ـزٌ"], fullWord: "وَلَدٌ" },
+        { wordWithBlank: "يَ_مٌ / يَدٌ", missingChar: "دٌ", options: ["ـدٌ", "ـرٌ", "ـلٌ"], fullWord: "يَدٌ" }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    document.getElementById("totalQ").innerText = questions.length;
+
+    function loadQuestion() {
+        answered = false;
+        document.getElementById("messageBox").innerText = "";
+        document.getElementById("nextBtn").style.display = "none";
+
+        const q = questions[currentIndex];
+        document.getElementById("currentQ").innerText = currentIndex + 1;
+        document.getElementById("wordDisplay").innerText = q.wordWithBlank;
+
+        // خلط خيارات الحروف عشوائياً
+        let shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+
+        const optionsContainer = document.getElementById("optionsContainer");
+        optionsContainer.innerHTML = "";
+
+        shuffledOptions.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt, q.missingChar, q.fullWord);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selected, correct, fullWord) {
+        if (answered) return;
+        answered = true;
+
+        const messageBox = document.getElementById("messageBox");
+
+        if (selected === correct) {
+            score += 10;
+            document.getElementById("score").innerText = score;
+            messageBox.className = "message success";
+            messageBox.innerText = "أحسنت! 🌟";
+            
+            // عرض الكلمة كاملة بعد الإجابة الصحيحة
+            document.getElementById("wordDisplay").innerText = fullWord;
+
+            // نطق كلمة "أحسنت" ثم نطق الكلمة بالكامل
+            speakText("أحسنت. " + fullWord);
+        } else {
+            messageBox.className = "message error";
+            messageBox.innerText = "خطأ، حاول مرة أخرى! ❌";
+            speakText("خطأ");
+            answered = false; // السماح للمستخدم بالمحاولة مرة أخرى
+            return;
+        }
+
+        document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.querySelector(".game-card").innerHTML = `
+                <h3 style="color: #2b6cb0;">أنهيت جميع الحروف بنجاح! 🎉</h3>
+                <p style="font-size: 20px;">مجموع نقاطك النهائي: <b>${score}</b> من ${questions.length * 10}</p>
+                <button class="next-btn" style="display:inline-block;" onclick="location.reload()">إعادة اللعبة 🔄</button>
+            `;
+            speakText("لقد أنهيت جميع حروف الهجاء بنجاح. مبروك!");
+        }
+    }
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // بدء اللعبة عند فتح الصفحة
+    window.onload = loadQuestion;
+</script>
+
+</body>
+</html>

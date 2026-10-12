@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجميع الحروف مع الحركات والنطق</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 15px;
+            direction: rtl;
+            text-align: right;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .stats {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        button.speak-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button.speak-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>جدول الحروف الهجائية مع حركات التشكيل والنطق</h2>
+    <div class="stats" id="stats">جاري توليد البيانات...</div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>الحرف أصلي</th>
+                <th>الحركة</th>
+                <th>الحرف المشكول</th>
+                <th>النطق الصوتي</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- سيتم ملء البيانات عبر الجافاسكريبت -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 1. الحروف الهجائية الـ 28
+    const letters = [
+        "أ", "ب", "ت", "ث", "ج", "ح", "خ", "د", "ذ", "ر", 
+        "ز", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", 
+        "ق", "ك", "ل", "م", "ن", "هـ", "و", "ي"
+    ];
+
+    // 2. الحركات الـ 6 (الفتحة، الكسرة، الضمة، الشدة، السكون، التنوين) مع علاماتها الرمزية وأسمائها
+    const tashkeel = [
+        { name: "فتحة", symbol: "َ" },
+        { name: "كسرة", symbol: "ِ" },
+        { name: "ضمة", symbol: "ُ" },
+        { name: "شدة", symbol: "ّ" },
+        { name: "سكون", symbol: "ْ" },
+        { name: "تنوين", symbol: "ً" }
+    ];
+
+    const tableBody = document.getElementById("tableBody");
+    const statsDiv = document.getElementById("stats");
+    
+    let combinationsCount = 0;
+    let htmlContent = "";
+
+    // 3. دمج الحروف مع الحركات
+    letters.forEach((letter, lIndex) => {
+        tashkeel.forEach((haraka, hIndex) => {
+            combinationsCount++;
+            const combined = letter + haraka.symbol;
+            
+            htmlContent += `
+                <tr>
+                    <td>${combinationsCount}</td>
+                    <td><b>${letter}</b></td>
+                    <td>${haraka.name}</td>
+                    <td style="font-size: 24px; color: #d9534f;"><b>${combined}</b></td>
+                    <td>
+                        <button class="speak-btn" onclick="speakText('${combined}')">🔊 انطق</button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+
+    tableBody.innerHTML = htmlContent;
+    statsDiv.innerHTML = `إجمالي عدد التجميعات (28 حرف × 6 حركات) = <b>${combinationsCount}</b> حركة وصوت.`;
+
+    // 4. وظيفة النطق الصوتي باستخدام متصفح الويب
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            // إيقاف أي نطق سابق
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA'; // تحديد اللفظ العربي
+            utterance.rate = 0.8;    // تقليل السرعة قليلاً لوضوح النطق
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("عذراً، ميزة النطق غير مدعومة في متصفحك.");
+        }
+    }
+</script>
+
+</body>
+</html>

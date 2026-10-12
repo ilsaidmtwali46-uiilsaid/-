@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تغير مواضع الحروف مع التشكيل والنطق</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 15px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .letter-card {
+            background: #fff;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .letter-header {
+            background-color: #2b6cb0;
+            color: white;
+            padding: 12px 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border-bottom: 1px solid #edf2f7;
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-size: 15px;
+        }
+        .position-cell {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c53030;
+            width: 20%;
+        }
+        .words-cell {
+            text-align: right;
+            padding-right: 15px;
+            width: 55%;
+        }
+        .word-tag {
+            display: inline-block;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+            padding: 6px 12px;
+            margin: 4px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .action-cell {
+            width: 25%;
+        }
+        button.speak-btn {
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+        button.speak-btn:hover {
+            background-color: #2f855a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>مواضع الحروف في الكلمة مع التشكيل الكامل والنطق</h2>
+    <div class="subtitle" id="totalInfo">جاري تحميل البيانات...</div>
+
+    <div id="contentArea"></div>
+</div>
+
+<script>
+    // مصفوفة الحروف موضحاً فيها شكل الحرف في (أول - وسط - آخر) الكلمة مع أمثلة مشكولة
+    const data = [
+        {
+            letter: "أ - الألف",
+            positions: [
+                { form: "أَـ (أول الكلمة)", words: ["أَسَدٌ", "أَرْنَبٌ", "أَمَلٌ"] },
+                { form: "ـأَـ (وسط الكلمة)", words: ["سَأَلَ", "رَأْسٌ", "فَأْرٌ"] },
+                { form: "ـأٌ / أٌ (آخر الكلمة)", words: ["قَرَأَ", "مَلَأَ", "مَبْدَأٌ"] }
+            ]
+        },
+        {
+            letter: "ب - الباء",
+            positions: [
+                { form: "بَـ (أول الكلمة)", words: ["بَقَرَةٌ", "بَابٌ", "بَيْتٌ"] },
+                { form: "ـبَـ (وسط الكلمة)", words: ["جَبَلٌ", "حَبْلٌ", "خَبَزَ"] },
+                { form: "ـبٌ / بٌ (آخر الكلمة)", words: ["كِتَابٌ", "عِنَبٌ", "كَلْبٌ"] }
+            ]
+        },
+        {
+            letter: "ت - التاء",
+            positions: [
+                { form: "تَـ (أول الكلمة)", words: ["تَمْرٌ", "تَاجٌ", "تُفَّاحٌ"] },
+                { form: "ـتَـ (وسط الكلمة)", words: ["كَتَبَ", "دَفْتَرٌ", "بُسْتَانٌ"] },
+                { form: "ـتٌ / تٌ (آخر الكلمة)", words: ["بَيْتٌ", "بِنْتٌ", "زَيْتٌ"] }
+            ]
+        },
+        {
+            letter: "ث - الثاء",
+            positions: [
+                { form: "ثَـ (أول الكلمة)", words: ["ثَعْلَبٌ", "ثَوْبٌ", "ثَلْجٌ"] },
+                { form: "ـثَـ (وسط الكلمة)", words: ["مَثَلٌ", "عُثْمَانُ", "كَمَّثْرَى"] },
+                { form: "ـثٌ / ثٌ (آخر الكلمة)", words: ["بَحَثَ", "حَدِيثٌ", "أَثَاثٌ"] }
+            ]
+        },
+        {
+            letter: "ج - الجيم",
+            positions: [
+                { form: "جَـ (أول الكلمة)", words: ["جَمَلٌ", "جَبَلٌ", "جَزَرٌ"] },
+                { form: "ـجَـ (وسط الكلمة)", words: ["شَجَرَةٌ", "سَجَدَ", "حَجَرٌ"] },
+                { form: "ـجٌ / جٌ (آخر الكلمة)", words: ["ثَلْجٌ", "بُرْجٌ", "تَاجٌ"] }
+            ]
+        },
+        {
+            letter: "ح - الحاء",
+            positions: [
+                { form: "حَـ (أول الكلمة)", words: ["حَمَامَةٌ", "حَقِيبَةٌ", "حَلِيبٌ"] },
+                { form: "ـحَـ (وسط الكلمة)", words: ["بَحْرٌ", "لَحْمٌ", "سَحَابٌ"] },
+                { form: "ـحٌ / حٌ (آخر الكلمة)", words: ["مِلْحٌ", "تُفَّاحٌ", "مَفْتَاحٌ"] }
+            ]
+        },
+        {
+            letter: "خ - الخاء",
+            positions: [
+                { form: "خَـ (أول الكلمة)", words: ["خَرُوفٌ", "خُبْزٌ", "خَشَبٌ"] },
+                { form: "ـخَـ (وسط الكلمة)", words: ["نَخْلَةٌ", "صَخْرٌ", "مَخْزَنٌ"] },
+                { form: "ـخٌ / خٌ (آخر الكلمة)", words: ["فَرَّخَ", "مَطْبَخٌ", "كُوخٌ"] }
+            ]
+        },
+        {
+            letter: "د - الدال",
+            positions: [
+                { form: "دَـ (أول الكلمة)", words: ["دَجَاجَةٌ", "دَفْتَرٌ", "دَارٌ"] },
+                { form: "ـدَـ (وسط الكلمة)", words: ["مَدْرَسَةٌ", "حَدِيقَةٌ", "صَدِيقٌ"] },
+                { form: "ـدٌ / دٌ (آخر الكلمة)", words: ["وَلَدٌ", "أَسَدٌ", "يَدٌ"] }
+            ]
+        },
+        {
+            letter: "ذ - الذال",
+            positions: [
+                { form: "ذَـ (أول الكلمة)", words: ["ذَهَبٌ", "ذَيْلٌ", "ذَكِيٌّ"] },
+                { form: "ـذَـ (وسط الكلمة)", words: ["جَذْرٌ", "بَذْرَةٌ", "أُسْتَاذَةٌ"] },
+                { form: "ـذٌ / ذٌ (آخر الكلمة)", words: ["تِلْمِيذٌ", "قُنْفُذٌ", "مُعَاذٌ"] }
+            ]
+        },
+        {
+            letter: "ر - الراء",
+            positions: [
+                { form: "رَـ (أول الكلمة)", words: ["رَجُلٌ", "رَأْسٌ", "رَمْلٌ"] },
+                { form: "ـرَـ (وسط الكلمة)", words: ["مَزْرَعَةٌ", "مَطَرٌ", "جَزَرٌ"] },
+                { form: "ـرٌ / رٌ (آخر الكلمة)", words: ["قَمَرٌ", "زَهْرٌ", "بَحْرٌ"] }
+            ]
+        },
+        {
+            letter: "ز - الزاي",
+            positions: [
+                { form: "زَـ (أول الكلمة)", words: ["زَرَافَةٌ", "زَهْرَةٌ", "زَيْتٌ"] },
+                { form: "ـزَـ (وسط الكلمة)", words: ["مَزْرَعَةٌ", "غَزَالٌ", "مَنْزِلٌ"] },
+                { form: "ـزٌ / زٌ (آخر الكلمة)", words: ["مَوْزٌ", "كَنَزَ", "أَرُزٌ"] }
+            ]
+        },
+        {
+            letter: "س - السين",
+            positions: [
+                { form: "سَـ (أول الكلمة)", words: ["سَمَكَةٌ", "سَيَّارَةٌ", "سَاعَةٌ"] },
+                { form: "ـسَـ (وسط الكلمة)", words: ["مَسْجِدٌ", "عَسَلٌ", "جَسَرٌ"] },
+                { form: "ـسٌ / سٌ (آخر الكلمة)", words: ["شَمْسٌ", "جَرَسٌ", "كِيسٌ"] }
+            ]
+        },
+        {
+            letter: "ش - الشين",
+            positions: [
+                { form: "شَـ (أول الكلمة)", words: ["شَمْسٌ", "شَجَرَةٌ", "شَمْعَةٌ"] },
+                { form: "ـشَـ (وسط الكلمة)", words: ["مِشْمِشٌ", "مَشَى", "كِشْكٌ"] },
+                { form: "ـشٌ / شٌ (آخر الكلمة)", words: ["عُشٌّ", "قَشٌّ", "رِيشٌ"] }
+            ]
+        },
+        {
+            letter: "ص - الصاد",
+            positions: [
+                { form: "صَـ (أول الكلمة)", words: ["صَقْرٌ", "صَابُونٌ", "صَحْنٌ"] },
+                { symbol: "ـصَـ (وسط الكلمة)", words: ["عَصُورٌ", "بَصَلٌ", "مَصْنَعٌ"] },
+                { form: "ـصٌ / صٌ (آخر الكلمة)", words: ["قَفَصٌ", "قَمِيصٌ", "مِقَصٌّ"] }
+            ]
+        },
+        {
+            letter: "ض - الضاد",
+            positions: [
+                { form: "ضَـ (أول الكلمة)", words: ["ضَبَابٌ", "ضَوْءٌ", "ضَفْدَعٌ"] },
+                { form: "ـضَـ (وسط الكلمة)", words: ["خَضْرَاءُ", "مَرِيضٌ", "غَضَبٌ"] },
+                { form: "ـضٌ / ضٌ (آخر الكلمة)", words: ["أَرْضٌ", "بَيْضٌ", "عَرِيضٌ"] }
+            ]
+        },
+        {
+            letter: "ط - الطاء",
+            positions: [
+                { form: "طَـ (أول الكلمة)", words: ["طَبِيبٌ", "طَائِرَةٌ", "طَمَاطِمُ"] },
+                { form: "ـطَـ (وسط الكلمة)", words: ["مَطَرٌ", "قِطَارٌ", "بَطَّةٌ"] },
+                { form: "ـطٌ / طٌ (آخر الكلمة)", words: ["قِطٌّ", "خَايِطٌ", "شَرِيطٌ"] }
+            ]
+        },
+        {
+            letter: "ظ - الظاء",
+            positions: [
+                { form: "ظَـ (أول الكلمة)", words: ["ظَبْيٌ", "ظَرْفٌ", "ظَلَامٌ"] },
+                { form: "ـظَـ (وسط الكلمة)", words: ["نَظَّارَةٌ", "مَظَلَّةٌ", "حَفِظَ"] },
+                { form: "ـظٌ / ظٌ (آخر الكلمة)", words: ["حَافِظٌ", "اسْتِيقَاظٌ", "غَلِيظٌ"] }
+            ]
+        },
+        {
+            letter: "ع - العين",
+            positions: [
+                { form: "عَـ (أول الكلمة)", words: ["عَلَمٌ", "عَيْنٌ", "عَنْكَبُوتٌ"] },
+                { form: "ـعَـ (وسط الكلمة)", words: ["مَلْعَبٌ", "شَمْعَةٌ", "سَاعَةٌ"] },
+                { form: "ـعٌ / عٌ (آخر الكلمة)", words: ["مَرَبَّعٌ", "ضَفْدَعٌ", "ذِرَاعٌ"] }
+            ]
+        },
+        {
+            letter: "غ - الغين",
+            positions: [
+                { form: "غَـ (أول الكلمة)", words: ["غَزَالٌ", "غَابَةٌ", "غَمَامٌ"] },
+                { form: "ـغَـ (وسط الكلمة)", words: ["مَغْرِبٌ", "بَبَّغَاءُ", "صَغِيرٌ"] },
+                { form: "ـغٌ / غٌ (آخر الكلمة)", words: ["صَمْغٌ", "دِمَاغٌ", "صَبَاغٌ"] }
+            ]
+        },
+        {
+            letter: "ف - الفاء",
+            positions: [
+                { form: "فَـ (أول الكلمة)", words: ["فَرَاشَةٌ", "فِيلٌ", "فَرَسٌ"] },
+                { form: "ـفَـ (وسط الكلمة)", words: ["دَفْتَرٌ", "عُصْفُورٌ", "سَفِينَةٌ"] },
+                { form: "ـفٌ / فٌ (آخر الكلمة)", words: ["صَوْفٌ", "سَقْفٌ", "رَفٌّ"] }
+            ]
+        },
+        {
+            letter: "ق - القاف",
+            positions: [
+                { form: "قَـ (أول الكلمة)", words: ["قَلَمٌ", "قَمَرٌ", "قَارِبٌ"] },
+                { form: "ـقَـ (وسط الكلمة)", words: ["صَدِيقٌ", "بَقَرَةٌ", "مَقْعَدٌ"] },
+                { form: "ـقٌ / قٌ (آخر الكلمة)", words: ["سُوقٌ", "طَرِيقٌ", "إِبْرِيقٌ"] }
+            ]
+        },
+        {
+            letter: "ك - الكاف",
+            positions: [
+                { form: "كَـ (أول الكلمة)", words: ["كَلْبٌ", "كِتَابٌ", "كَعْكٌ"] },
+                { form: "ـكَـ (وسط الكلمة)", words: ["سَمَكَةٌ", "مَكْتَبٌ", "مَكَّاةٌ"] },
+                { form: "ـكٌ / كٌ (آخر الكلمة)", words: ["سَمَكٌ", "دِيكٌ", "شَبَكَةٌ"] }
+            ]
+        },
+        {
+            letter: "ل - اللام",
+            positions: [
+                { form: "لَـ (أول الكلمة)", words: ["لَمْبَةٌ", "لَحْمٌ", "لَبَنٌ"] },
+                { form: "ـلَـ (وسط الكلمة)", words: ["قَلَمٌ", "جَمَلٌ", "سُلَّمٌ"] },
+                { form: "ـلٌ / لٌ (آخر الكلمة)", words: ["عَسَلٌ", "بَصَلٌ", "جَبَلٌ"] }
+            ]
+        },
+        {
+            letter: "م - الميم",
+            positions: [
+                { form: "مَـ (أول الكلمة)", words: ["مَوْزٌ", "مَسْجِدٌ", "مَلِكٌ"] },
+                { form: "ـمَـ (وسط الكلمة)", words: ["شَمْسٌ", "قَمَرٌ", "نَجْمَةٌ"] },
+                { form: "ـمٌ / مٌ (آخر الكلمة)", words: ["قَلَمٌ", "لَحْمٌ", "ثَوْمٌ"] }
+            ]
+        },
+        {
+            letter: "ن - النون",
+            positions: [
+                { form: "نَـ (أول الكلمة)", words: ["نَجْمَةٌ", "نَخْلَةٌ", "نَهْرٌ"] },
+                { form: "ـنَـ (وسط الكلمة)", words: ["عِنَبٌ", "بِنْتٌ", "مَنْزِلٌ"] },
+                { form: "ـنٌ / نٌ (آخر الكلمة)", words: ["جَبَنٌ", "لَبَنٌ", "تِينٌ"] }
+            ]
+        },
+        {
+            letter: "هـ - الهاء",
+            positions: [
+                { form: "هَـ (أول الكلمة)", words: ["هَرَمٌ", "هَدِيَّةٌ", "هَاتِفٌ"] },
+                { form: "ـهـَـ (وسط الكلمة)", words: ["نَهْرٌ", "زَهْرَةٌ", "فَهْدٌ"] },
+                { form: "ـهٌ / هٌ (آخر الكلمة)", words: ["وِجْهٌ", "فَوَاكِهُ", "مِيَاهٌ"] }
+            ]
+        },
+        {
+            letter: "و - الواو",
+            positions: [
+                { form: "وَـ (أول الكلمة)", words: ["وَرَدَةٌ", "وَلَدٌ", "وَجْهٌ"] },
+                { form: "ـوَـ (وسط الكلمة)", words: ["دَوَاءٌ", "طَاوِلَةٌ", "مَوْزٌ"] },
+                { form: "ـوٌ / وٌ (آخر الكلمة)", words: ["جَرَوٌْ", "دَلْوٌ", "عَفْوٌ"] }
+            ]
+        },
+        {
+            letter: "ي - الياء",
+            positions: [
+                { form: "يَـ (أول الكلمة)", words: ["يَدٌ", "يَاسَمِينٌ", "يَمَامَةٌ"] },
+                { form: "ـيَـ (وسط الكلمة)", words: ["بَيْتٌ", "سَيَّارَةٌ", "عَيْنٌ"] },
+                { form: "ـيٌ / يٌ (آخر الكلمة)", words: ["شَايٌ", "كُرْسِيٌّ", "ظَبْيٌ"] }
+            ]
+        }
+    ];
+
+    const contentArea = document.getElementById("contentArea");
+    const totalInfo = document.getElementById("totalInfo");
+
+    let totalPositions = 0;
+    let totalWordsCount = 0;
+
+    data.forEach((item) => {
+        let cardHTML = `
+            <div class="letter-card">
+                <div class="letter-header">
+                    <span>${item.letter}</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>موقع الحرف والشكل</th>
+                            <th>3 كلمات أمثلة مشكولة</th>
+                            <th>النطق الصوتي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        item.positions.forEach(pos => {
+            totalPositions++;
+            totalWordsCount += pos.words.length;
+            const wordsJoined = pos.words.map(w => `<span class="word-tag">${w}</span>`).join(" ");
+
+            cardHTML += `
+                <tr>
+                    <td class="position-cell">${pos.form}</td>
+                    <td class="words-cell">${wordsJoined}</td>
+                    <td class="action-cell">
+                        <button class="speak-btn" onclick="speakWords(['${pos.words.join("','")}'])">
+                            🔊 نطق الكلمات
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        cardHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        contentArea.innerHTML += cardHTML;
+    });
+
+    totalInfo.innerHTML = `يحتوي التطبيق على <b>28 حرفاً</b> | <b>${totalPositions} موضعاً وشكلاً للحروف</b> | <b>${totalWordsCount} كلمة مشكولة</b> توضح تغيير مكان الحرف.`;
+
+    // وظيفة النطق الصوتي المباشر للكلمات
+    function speakWords(wordsArray) {
+        if (!('speechSynthesis' in window)) {
+            alert("عذراً، ميزة النطق غير مدعومة في جهازك.");
+            return;
+        }
+
+        window.speechSynthesis.cancel(); // إيقاف أي صوت سابق
+
+        wordsArray.forEach(word => {
+            let utterWord = new SpeechSynthesisUtterance(word);
+            utterWord.lang = 'ar-SA';
+            utterWord.rate = 0.85;
+            window.speechSynthesis.speak(utterWord);
+        });
+    }
+</script>
+
+</body>
+</html>

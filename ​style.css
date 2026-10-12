@@ -1,0 +1,312 @@
+/* ==========================================
+   1. الإعدادات العامة والألوان الأساسية
+   ========================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f4f8;
+    color: #2d3748;
+    direction: rtl;
+    line-height: 1.6;
+    padding-bottom: 80px; /* مساحة للشريط السفلي أو الهامش */
+}
+
+/* ==========================================
+   2. الهيدر والشريط العلوي (Header)
+   ========================================== */
+.app-header {
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    color: #ffffff;
+    text-align: center;
+    padding: 16px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.app-header h1 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.app-header p {
+    font-size: 13px;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+/* Container الحاوي للمحتوى */
+.container {
+    max-width: 800px;
+    margin: 15px auto;
+    padding: 0 12px;
+}
+
+/* ==========================================
+   3. الكروت وشبكة الواجهة الرئيسية (Index)
+   ========================================== */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.menu-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    border: 2px solid #e2e8f0;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.menu-card:active {
+    transform: scale(0.98);
+    background-color: #ebf8ff;
+    border-color: #3182ce;
+}
+
+.menu-card .icon-box {
+    width: 50px;
+    height: 50px;
+    background-color: #ebf8ff;
+    color: #2b6cb0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.menu-card .info {
+    flex-grow: 1;
+}
+
+.menu-card h3 {
+    margin: 0 0 4px 0;
+    font-size: 17px;
+    color: #2d3748;
+}
+
+.menu-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #718096;
+}
+
+.arrow-icon {
+    font-size: 18px;
+    color: #cbd5e0;
+}
+
+/* ==========================================
+   4. الأزرار ومفاتيح التبويب (Sub-Keys / Tabs)
+   ========================================== */
+.sub-keys {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    scrollbar-width: none;
+}
+
+.sub-keys::-webkit-scrollbar {
+    display: none;
+}
+
+.key-btn {
+    background-color: #edf2f7;
+    color: #2d3748;
+    border: 2px solid #cbd5e0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.key-btn.active {
+    background-color: #2b6cb0;
+    color: #ffffff;
+    border-color: #2b6cb0;
+    box-shadow: 0 3px 8px rgba(43, 108, 176, 0.3);
+}
+
+/* ==========================================
+   5. الجداول العرضية والإعرابية (Tables)
+   ========================================== */
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid #cbd5e0;
+    padding: 8px 10px;
+    text-align: right;
+    font-size: 14px;
+}
+
+th {
+    background-color: #edf2f7;
+    color: #2d3748;
+    font-weight: bold;
+}
+
+/* ==========================================
+   6. عناصر الأجواء التعليمية ولعبة الحروف
+   ========================================== */
+.sentence-title {
+    font-size: 19px;
+    color: #c53030;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.badge {
+    display: inline-block;
+    background: #ebf8ff;
+    color: #2b6cb0;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.explanation {
+    font-size: 13px;
+    color: #4a5568;
+    background: #f7fafc;
+    padding: 8px 12px;
+    border-right: 4px solid #3182ce;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* واجهة لعبة الحرف الناقص */
+.game-box {
+    text-align: center;
+    padding: 20px 10px;
+}
+
+.word-display {
+    font-size: 36px;
+    font-weight: bold;
+    color: #2b6cb0;
+    letter-spacing: 2px;
+    margin: 15px 0;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.opt-btn {
+    background: #ffffff;
+    border: 2px solid #3182ce;
+    color: #2b6cb0;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.opt-btn:active {
+    background: #ebf8ff;
+}
+
+/* ==========================================
+   7. أزرار الصوت والنطق
+   ========================================== */
+.btn-speak {
+    background-color: #38a169;
+    color: #ffffff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.btn-speak:active {
+    background-color: #2f855a;
+}
+
+/* ==========================================
+   8. شريط التنقل السفلي (Bottom Nav Bar)
+   ========================================== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    border-top: 1px solid #cbd5e0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.nav-item {
+    text-align: center;
+    color: #718096;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: none;
+    flex: 1;
+}
+
+.nav-item.active {
+    color: #2b6cb0;
+    font-weight: bold;
+}
+
+.nav-item .nav-icon {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 2px;
+}

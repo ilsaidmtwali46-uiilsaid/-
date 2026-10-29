@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>الأدوات والحاسبات - برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .tool-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            background: inherit;
+            color: inherit;
+        }
+
+        .btn-calc {
+            display: block;
+            width: 100%;
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .result-box {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #1b5e20;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>الأدوات والحاسبات الذكية</h1>
+        <p>حاسبة استهلاك الأعلاف والمساحات المطلوبة للعنبر</p>
+    </div>
+
+    <div class="container">
+
+        <!-- حاسبة 1: حاسبة استهلاك الأعلاف التراكمي -->
+        <div class="tool-card">
+            <h3>⚖️ حاسبة استهلاك العلف المتوقع</h3>
+            <div class="form-group">
+                <label for="chickCount">عدد الكتاكيت الحية:</label>
+                <input type="number" id="chickCount" placeholder="مثال: 1000">
+            </div>
+            <div class="form-group">
+                <label for="targetAge">عمر الدورة المستهدف (بالأيام):</label>
+                <input type="number" id="targetAge" placeholder="مثال: 35 يوم">
+            </div>
+            <button class="btn-calc" onclick="calculateFeed()">احسب إجمالي العلف المطلوب</button>
+            <div class="result-box" id="feedResultBox"></div>
+        </div>
+
+        <!-- حاسبة 2: حاسبة مساحة العنبر والكثافة -->
+        <div class="tool-card">
+            <h3>🏠 حاسبة المساحة والكثافة (عدد الطيور بالمتر)</h3>
+            <div class="form-group">
+                <label for="totalChicks">إجمالي عدد الكتاكيت:</label>
+                <input type="number" id="totalChicks" placeholder="مثال: 1000">
+            </div>
+            <div class="form-group">
+                <label for="birdsPerMeter">معدل التسكين لكل متر مربع (المعتاد 10-12 طائر):</label>
+                <input type="number" id="birdsPerMeter" value="11">
+            </div>
+            <button class="btn-calc" onclick="calculateSpace()">احسب المساحة المطلوبة بالمتر</button>
+            <div class="result-box" id="spaceResultBox"></div>
+        </div>
+
+        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | كافة البيانات مخزنة محلياً على هاتفك فقط
+    </div>
+
+    <script>
+        const themes = [
+            { bg: '#f4f6f8', text: '#333333', card: '#ffffff' },
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' },
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' },
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' },
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }
+        ];
+
+        function applyTheme() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex

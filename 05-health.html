@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>الحالة الصحية والتحصينات - برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* كارت إرشادات الإدارة للتحصينات والجرعات حسب الجو والبيئة */
+        .admin-directive-card {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            color: #0d47a1;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .admin-directive-card strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #1565c0;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: inherit;
+            color: inherit;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(46,125,50,0.3);
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>الحالة الصحية والتحصينات</h1>
+        <p>تسجيل الأدوية والاطلاع على تعليمات الإدارة البيئية</p>
+    </div>
+
+    <div class="container">
+
+        <!-- كارت توجيهات الإدارة للجرعات والتحصينات حسب الجو والبيئة -->
+        <div class="admin-directive-card" id="adminDirectiveBox">
+            <strong>📢 توجيهات الإدارة والجرعات (حسب حالة الطقس والبيئة):</strong>
+            <span id="adminDirectiveText">جاري تحديث الجرعات والتعليمات الصادرة من المبرمج الإدارة...</span>
+        </div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label for="healthDate">تاريخ اليوم:</label>
+                <input type="date" id="healthDate">
+            </div>
+            <div class="form-group">
+                <label for="actionType">نوع الإجراء الصحي:</label>
+                <select id="actionType">
+                    <option value="لقاح / تحصين">لقاح أو تحصين وقائي</option>
+                    <option value="علاج بيطري">علاج بيطري (مضاد حيوي / فيتامينات)</option>
+                    <option value="مطهر / تعقيم">مطهر / رش العنبر</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="medicineName">اسم الدواء أو اللقاح:</label>
+                <input type="text" id="medicineName" placeholder="مثال: لاسوتا - إمتريل - أُمبرول">
+            </div>
+            <div class="form-group">
+                <label for="dosageNotes">الجراعة والملاحظات الطبية:</label>
+                <textarea id="dosageNotes" rows="3" placeholder="مثال: 1 سم لكل لتر مياه لمدة 3 أيام..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="saveHealthData()">حفظ السجل الصحي محلياً</button>
+        </div>
+
+        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | كافة البيانات مخزنة محلياً على هاتفك فقط
+    </div>
+
+    <script>
+        const themes = [
+            { bg: '#f4f6f8', text: '#333333', card: '#ffffff' },
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' },
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' },
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' },
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }
+        ];
+
+        function applyTheme() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex);
+            const t = themes[savedIndex];
+            document.documentElement.style.setProperty('--bg-color', t.bg);
+            document.documentElement.style.setProperty('--text-color', t.text);
+            document.documentElement.style.setProperty('--card-bg', t.card);
+        }
+
+        // جلب تعليمات وتوجيهات الإدارة للجرعات (تتحدث أوتوماتيكياً حسب تعليمات المالك للبيئة والطقس)
+        function loadAdminDirectives() {
+            const directiveText = document.getElementById('adminDirectiveText');
+            
+            // يمكن حفظ هذه التعليمات محلياً أو جلبها عند اتصال العميل بالإنترنت لتحديث الإشعارات
+            let customAdminNote = localStorage.getItem('admin_health_directive');
+            
+            if (!customAdminNote) {
+                // نص افتراضي صادر من الإدارة يتكيف مع التقلبات الجوية
+                customAdminNote = "• <strong>حالة الجو الحالية:</strong> نظراً للتقلبات الجوية وارتفاع الرطوبة، تشدد الإدارة على ضرورة زيادة التهوية في منتصف النهار وإعطاء رفع مناعة مع فيتامين (C) قبل أي تحصين بـ 24 ساعة.<br>• <strong>الجرعات:</strong> الالتزام بالجرعات المقررة صباحاً في مياه الشرب النقية الباردة.";
+            }
+            
+            directiveText.innerHTML = customAdminNote;
+        }
+
+        function saveHealthData() {
+            const healthData = {
+                date: document.getElementById('healthDate').value,
+                type: document.getElementById('actionType').value,
+                name: document.getElementById('medicineName').value,
+                notes: document.getElementById('dosageNotes').value
+            };
+            
+            localStorage.setItem('health_log_' + (healthData.date || 'latest'), JSON.stringify(healthData));
+            alert('تم حفظ السجل الصحي والتحصينات بنجاح على هاتفك!');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            document.getElementById('healthDate').valueAsDate = new Date();
+            loadAdminDirectives();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>إدارة المخزن - برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: inherit;
+            color: inherit;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(46,125,50,0.3);
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>إدارة المخزن والمستلزمات</h1>
+        <p>تسجيل أرصدة الأعلاف، الأدوية، والأدوات المتاحة</p>
+    </div>
+
+    <div class="container">
+        <div class="form-card">
+            <div class="form-group">
+                <label for="itemName">اسم الصنف (علف / دواء / مستلزمات):</label>
+                <input type="text" id="itemName" placeholder="مثال: شجائر علف بادي / زجاجة مطهر">
+            </div>
+            <div class="form-group">
+                <label for="itemCategory">تصنيف الصنف:</label>
+                <select id="itemCategory">
+                    <option value="أعلاف">أعلاف</option>
+                    <option value="أدوية ولقاحات">أدوية ولقاحات</option>
+                    <option value="مستلزمات تشغيل">مستلزمات وتشغيل (نشارة، أدوية نظافة)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="itemQuantity">الكمية المتاحة في المخزن:</label>
+                <input type="number" id="itemQuantity" placeholder="مثال: 20 (شكارة أو لتر أو قطعة)">
+            </div>
+            <div class="form-group">
+                <label for="notes">ملاحظات المخزن:</label>
+                <input type="text" id="notes" placeholder="مثال: توريد شركة كذا...">
+            </div>
+            <button class="btn-primary" onclick="saveStoreData()">حفظ صنف المخزن محلياً</button>
+        </div>
+
+        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | كافة البيانات مخزنة محلياً على هاتفك فقط
+    </div>
+
+    <script>
+        const themes = [
+            { bg: '#f4f6f8', text: '#333333', card: '#ffffff' },
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' },
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' },
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' },
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }
+        ];
+
+        function applyTheme() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex);
+            const t = themes[savedIndex];
+            document.documentElement.style.setProperty('--bg-color', t.bg);
+            document.documentElement.style.setProperty('--text-color', t.text);
+            document.documentElement.style.setProperty('--card-bg', t.card);
+        }
+
+        function saveStoreData() {
+            const storeData = {
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                quantity: document.getElementById('itemQuantity').value,
+                notes: document.getElementById('notes').value
+            };
+            
+            if(!storeData.name) {
+                alert('يرجى كتابة اسم الصنف أولاً.');
+                return;
+            }
+
+            localStorage.setItem('store_item_' + Date.now(), JSON.stringify(storeData));
+            alert('تم حفظ صنف المخزن بنجاح على هاتفك!');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+        });
+    </script>
+</body>
+</html>

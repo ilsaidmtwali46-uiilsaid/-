@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>متابعة الأوزان ومعدل النمو - برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* كارت التوجيه والوزن النموذجي */
+        .info-card {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #1b5e20;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        /* كارت تنبيه ضعف التحويل (يظهر عند انخفاض الوزن عن المعدل القياسي) */
+        .warning-card {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            display: none; /* مخفي افتراضياً ولا يظهر إلا عند ضعف التحويل */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .warning-card strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #721c24;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: inherit;
+            color: inherit;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(46,125,50,0.3);
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>متابعة الأوزان ومعدل النمو</h1>
+        <p>تسجيل متوسط الوزن الدوري والتنبيه المبكر لضعف التحويل</p>
+    </div>
+
+    <div class="container">
+
+        <!-- كارت تنبيه ضعف التحويل (يظهر أوتوماتيكياً لو الوزن الفعلي قليل جداً عن المطلوب) -->
+        <div class="warning-card" id="weakConversionAlert">
+            <strong>⚠️ تنبيه هـام: معدل التحويل والوزن ضعيف!</strong>
+            <span id="warningText">الوزن المسجل أقل من المعدل القياسي لهذا العمر، يُرجى فحص جودة العلف، التهوية، وعلاج أي مشاكل معوية بالقطيع.</span>
+        </div>
+
+        <!-- كارت التوجيه والوزن النموذجي -->
+        <div class="info-card" id="weightGuideCard">
+            <strong>📊 دليل الأوزان المثالية للإرشاد:</strong>
+            <span id="guideText">جاري حساب عمر الدورة وتحديد الوزن القياسي...</span>
+        </div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label for="weightDate">تاريخ القياس:</label>
+                <input type="date" id="weightDate" onchange="checkWeightAndConversion()">
+            </div>
+            <div class="form-group">
+                <label for="avgWeight">متوسط وزن الفرخ الفعلي (بالجرام):</label>
+                <input type="number" id="avgWeight" placeholder="مثال: 350 (جرام)" oninput="checkWeightAndConversion()">
+            </div>
+            <div class="form-group">
+                <label for="sampleCount">عدد الفراخ التي تم وزنها في العينة:</label>
+                <input type="number" id="sampleCount" placeholder="مثال: 10 طيور">
+            </div>
+            <button class="btn-primary" onclick="saveWeightData()">حفظ سجل الوزن محلياً</button>
+        </div>
+
+        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | كافة البيانات مخزنة محلياً على هاتفك فقط
+    </div>
+
+    <script>
+        const themes = [
+            { bg: '#f4f6f8', text: '#333333', card: '#ffffff' },
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' },
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' },
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' },
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }
+        ];
+
+        function applyTheme() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex);
+            const t = themes[savedIndex];
+            document.documentElement.style.setProperty('--bg-color', t.bg);
+            document.documentElement.style.setProperty('--text-color', t.text);
+            document.documentElement.style.setProperty('--card-bg', t.card);
+        }
+
+        // فحص الوزن ومقارنته بالمثالي لإعطاء تنبيه ضعف التحويل أوتوماتيكياً
+        function checkWeightAndConversion() {
+            const savedCycle = localStorage.getItem('current_cycle');
+            const guideText = document.getElementById('guideText');
+            const warningCard = document.getElementById('weakConversionAlert');
+            const warningText = document.getElementById('warningText');
+            const enteredWeight = parseFloat(document.getElementById('avgWeight').value);
+
+            if (!savedCycle) {
+                guideText.innerText = "يرجى تسجيل بيانات الدورة في (دورة الإنتاج) أولاً لتظهر الأوزان القياسية المناسبة.";
+                warningCard.style.display = 'none';
+                return;
+            }
+
+            const cycleData = JSON.parse(savedCycle);
+            if (!cycleData.date) return;
+
+            const startDate = new Date(cycleData.date);
+            const selectedDate = new Date(document.getElementById('weightDate').value || new Date());
+            
+            const diffTime = selectedDate - startDate;
+            const ageInDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            if (ageInDays < 1) {
+                guideText.innerText = "تاريخ القياس قبل بدء الدورة.";
+                warningCard.style.display = 'none';
+                return;
+            }
+
+            // تحديد الحدود الدنيا المقبولة للوزن النموذجي لكل مرحلة (تقدير علمي تقريبي للحد الأدنى الآمن)
+            let minExpectedWeight = 0;
+            let standardMsg = "";
+
+            if (ageInDays <= 7) {
+                minExpectedWeight = 140; // الحد الأدنى المقبول للأسبوع الأول
+                standardMsg = "الوزن المثالي للأسبوع الأول: 160 - 180 جرام.";
+            } else if (ageInDays <= 14) {
+                minExpectedWeight = 360; // الحد الأدنى عند أسبوعين
+                standardMsg = "الوزن المثالي عند عمر أسبوعين (14 يوم): 400 - 450 جرام.";
+            } else if (ageInDays <= 21) {
+                minExpectedWeight = 720; // الحد الأدنى عند 3 أسابيع
+                standardMsg = "الوزن المثالي عند عمر 3 أسابيع (21 يوم): 800 - 900 جرام.";
+            } else if (ageInDays <= 28) {
+                minExpectedWeight = 1150; // الحد الأدنى عند 4 أسابيع
+                standardMsg = "الوزن المثالي عند عمر 4 أسابيع (28 يوم): 1300 - 1450 جرام.";
+            } else if (ageInDays <= 35) {
+                minExpectedWeight = 1700; // الحد الأدنى عند 5 أسابيع
+                standardMsg = "الوزن المثالي عند عمر 5 أسابيع (35 يوم): 1900 - 2100 جرام.";
+            } else {
+                minExpectedWeight = 2200;
+                standardMsg = "الوزن المثالي لمرحلة التسويق النهائي: 2.5 كجم فأكثر.";
+            }
+
+            guideText.innerHTML = "عمر القطيع الحالي: <strong>" + ageInDays + " يوم</strong>.<br>• " + standardMsg;
+
+            // إذا أدخل المستخدم وزناً فعلياً وكان أقل من الحد الأدنى المقبول بوضوح، يظهر تنبيه ضعف التحويل
+            if (!isNaN(enteredWeight) && enteredWeight > 0) {
+                if (enteredWeight < minExpectedWeight) {
+                    warningCard.style.display = 'block';
+                    warningText.innerHTML = "الوزن الفعلي المسجل (" + enteredWeight + " جم) أقل من الوزن القياسي المتوقع لعمر " + ageInDays + " يوم.<br>" +
+                        "• <strong>السبب المحتمل:</strong> سوء تهوية، زيادة نسبة غاز الأمونيا، مشاكل في الهضم، أو نقص جودة العلف.<br>" +
+                        "• <strong>الإجراء المقترح:</strong> مراجعة مضادات الكوكسيديا، تنشيط الكبد، وضبط حرارة وعمر العنبر.";
+                } else {
+                    warningCard.style.display = 'none'; // الوزن ممتاز أو طبيعي
+                }
+            } else {
+                warningCard.style.display = 'none';
+            }
+        }
+
+        function saveWeightData() {
+            const weightData = {
+                date: document.getElementById('weightDate').value,
+                weight: document.getElementById('avgWeight').value,
+                sample: document.getElementById('sampleCount').value
+            };
+            
+            localStorage.setItem('weight_log_' + (weightData.date || 'latest'), JSON.stringify(weightData));
+            alert('تم حفظ سجل الأوزان وفحص التحويل بنجاح على هاتفك!');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            document.getElementById('weightDate').valueAsDate = new Date();
+            checkWeightAndConversion();
+        });
+    </script>
+</body>
+</html>

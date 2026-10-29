@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>إدارة الأعلاف - برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* كارت إشعار تنبيه العلف */
+        .alert-card {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            display: none; /* يظهر تلقائياً عند اقتراب وقت الخلط */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .alert-card strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #856404;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: inherit;
+            color: inherit;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(46,125,50,0.3);
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>متابعة استهلاك الأعلاف والتنبيهات</h1>
+        <p>تسجيل أنواع الأعلاف والتنبيه التلقائي بخلط العلف والوزن</p>
+    </div>
+
+    <div class="container">
+
+        <!-- كارت إشعار التنبيه لخلط العلف والوزن -->
+        <div class="alert-card" id="feedAlertBox">
+            <strong id="alertTitle">⚠️ تنبيه خلط العلف القادم:</strong>
+            <span id="alertMessage">جاري فحص عمر الكتاكيت...</span>
+        </div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label for="feedDate">التاريخ:</label>
+                <input type="date" id="feedDate" onchange="checkFeedAlert()">
+            </div>
+            <div class="form-group">
+                <label for="feedType">نوع العلف المستخدم اليوم:</label>
+                <select id="feedType">
+                    <option value="بادي 23%">بادي 23% (بداية الدورة)</option>
+                    <option value="خلط (بادي + نامي)">خلط تدريجي (بادي + نامي)</option>
+                    <option value="نامي 21%">نامي 21% (مرحلة النمو)</option>
+                    <option value="خلط (نامي + ناهي)">خلط تدريجي (نامي + ناهي)</option>
+                    <option value="ناهي 19%">ناهي 19% (مرحلة التسمين)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="feedQuantity">الكمية المسحوبة اليوم (كجم أو شكائر):</label>
+                <input type="number" id="feedQuantity" placeholder="مثال: 50 كجم">
+            </div>
+            <button class="btn-primary" onclick="saveFeedData()">حفظ بيانات العلف محلياً</button>
+        </div>
+
+        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | كافة البيانات مخزنة محلياً على هاتفك فقط
+    </div>
+
+    <script>
+        const themes = [
+            { bg: '#f4f6f8', text: '#333333', card: '#ffffff' },
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' },
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' },
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' },
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }
+        ];
+
+        function applyTheme() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex);
+            const t = themes[savedIndex];
+            document.documentElement.style.setProperty('--bg-color', t.bg);
+            document.documentElement.style.setProperty('--text-color', t.text);
+            document.documentElement.style.setProperty('--card-bg', t.card);
+        }
+
+        // فحص عمر الطيور وتوليد إشعار التنبيه لخلط العلف والوزن
+        function checkFeedAlert() {
+            const savedCycle = localStorage.getItem('current_cycle');
+            const alertBox = document.getElementById('feedAlertBox');
+            const alertTitle = document.getElementById('alertTitle');
+            const alertMessage = document.getElementById('alertMessage');
+
+            if (!savedCycle) {
+                alertBox.style.display = 'block';
+                alertTitle.innerText = "ℹ️ ملاحظة:";
+                alertMessage.innerText = "يرجى إدخال تاريخ بدء الدورة في قسم (دورة الإنتاج) لتفعيل تنبيهات خلط العلف أوتوماتيكياً.";
+                return;
+            }
+
+            const cycleData = JSON.parse(savedCycle);
+            if (!cycleData.date) return;
+
+            const startDate = new Date(cycleData.date);
+            const selectedDate = new Date(document.getElementById('feedDate').value || new Date());
+            
+            // حساب العمر بالأيام
+            const diffTime = selectedDate - startDate;
+            const ageInDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            if (ageInDays < 1) {
+                alertBox.style.display = 'none';
+                return;
+            }
+
+            // تنبيه التغيير الأول: من بادي إلى نامي (عند يوم 12 و13 للتحويل يوم 14 - وزن مستهدف حوالي 400 - 450 جرام)
+            if (ageInDays === 12 || ageInDays === 13) {
+                alertBox.style.display = 'block';
+                alertTitle.innerText = "🔔 تنبيه خلط العلف (عمر " + ageInDays + " يوم):";
+                alertMessage.innerHTML = "متبقي <strong>" + (14 - ageInDays) + " يوم</strong> للتحويل إلى <strong>العلف النامي 21%</strong>.<br>" +
+                    "• يُنصح ببدء خلط البادي مع النامي بنسبة (50% بادي : 50% نامي).<br>" +
+                    "• <strong>الوزن المستهدف للتحويل:</strong> 400 - 450 جرام للفرخ.";
+            } 
+            // تنبيه التغيير الثاني: من نامي إلى ناهي (عند يوم 26 و27 للتحويل يوم 28 - وزن مستهدف حوالي 1400 - 1500 جرام)
+            else if (ageInDays === 26 || ageInDays === 27) {
+                alertBox.style.display = 'block';
+                alertTitle.innerText = "🔔 تنبيه خلط العلف (عمر " + ageInDays + " يوم):";
+                alertMessage.innerHTML = "متبقي <strong>" + (28 - ageInDays) + " يوم</strong> للتحويل إلى <strong>العلف الناهي 19%</strong>.<br>" +
+                    "• يُنصح ببدء خلط النامي مع الناهي بنسبة (50% نامي : 50% ناهي).<br>" +
+                    "• <strong>الوزن المستهدف للتحويل:</strong> 1400 - 1500 جرام للفرخ.";
+            } 
+            else {
+                alertBox.style.display = 'none';
+            }
+        }
+
+        function saveFeedData() {
+            const feedData = {
+                date: document.getElementById('feedDate').value,
+                type: document.getElementById('feedType').value,
+                quantity: document.getElementById('feedQuantity').value
+            };
+            
+            localStorage.setItem('feed_log_' + (feedData.date || 'latest'), JSON.stringify(feedData));
+            alert('تم حفظ سجل الأعلاف والتنبيهات بنجاح على هاتفك!');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            document.getElementById('feedDate').valueAsDate = new Date();
+            checkFeedAlert();
+        });
+    </script>
+</body>
+</html>

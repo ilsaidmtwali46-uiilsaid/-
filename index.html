@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* مؤشر السحب للتحديث */
+        .pull-to-refresh {
+            position: fixed;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 36px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            transition: top 0.2s ease, transform 0.2s ease;
+            z-index: 1000;
+        }
+        .pull-to-refresh.spinning {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        /* الشريط الدعائي المتحرك */
+        .marquee-container {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 6px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+        .marquee-content {
+            display: inline-block;
+            padding-right: 100%;
+            animation: marquee 18s linear infinite;
+            font-weight: bold;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(100%, 0, 0); }
+        }
+
+        /* الهيدر المدمج */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        /* حاوية محتويات الشاشة */
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* معلومات الاشتراك */
+        .subscription-info {
+            background: var(--card-bg);
+            border: 1px solid #c8e6c9;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .bg-changer {
+            background: #e8f5e9;
+            border: 1px solid #2e7d32;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* أقسام التطبيق */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            flex-grow: 1;
+            align-content: center;
+            margin: 5px 0;
+        }
+        .menu-item {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 12px 6px;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .menu-item:active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* زر تواصل الواتساب */
+        .whatsapp-btn {
+            display: block;
+            background: #25d366;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(37,211,102,0.3);
+            margin-bottom: 5px;
+        }
+
+        /* الفوتر المصغر */
+        .footer {
+            text-align: center;
+            padding: 4px;
+            font-size: 11px;
+            flex-shrink: 0;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- مؤشر السحب للتحديث -->
+    <div class="pull-to-refresh" id="refreshIndicator">↻</div>
+
+    <!-- الشريط الدعائي المتحرك للإدارة -->
+    <div class="marquee-container">
+        <div class="marquee-content" id="adminMarquee">
+            مرحباً بكم في برنامج تتبع دورة فراخ ٤٥ يوم — للاستفسارات وتجديد الاشتراكات تواصل مع المبرمج السيد متولى 201115197980 عبر الواتساب.
+        </div>
+    </div>
+
+    <!-- الهيدر واللوجو -->
+    <div class="header">
+        <h1>برنامج تتبع دورة فراخ ٤٥ يوم</h1>
+        <p>برمجة: السيد متولى 01115197980</p>
+    </div>
+
+    <div class="container">
+        <!-- معلومات الاشتراك وتغيير الخلفية -->
+        <div class="subscription-info">
+            <div>
+                <strong>المشترك:</strong> <span id="userNameDisplay">مستأجر التطبيق</span> <br>
+                <span style="font-size: 10px; opacity: 0.7;">البيانات مخزنة محلياً على هاتفك فقط.</span>
+            </div>
+            <button class="bg-changer" onclick="toggleBackground()">🎨 تغيير الخلفية</button>
+        </div>
+
+        <!-- أقسام التطبيق -->
+        <div class="menu-grid">
+            <a href="01-cycle.html" class="menu-item">دورة الإنتاج</a>
+            <a href="02-daily.html" class="menu-item">التسجيل اليومي</a>
+            <a href="03-feed.html" class="menu-item">الأعلاف</a>
+            <a href="04-weight.html" class="menu-item">الأوزان</a>
+            <a href="05-health.html" class="menu-item">الحالة الصحية</a>
+            <a href="06-store.html" class="menu-item">المخزن</a>
+            <a href="07-cash.html" class="menu-item">الخزينة</a>
+            <a href="08-tools.html" class="menu-item">الأدوات والحاسبات</a>
+            <a href="09-reports.html" class="menu-item" style="grid-column: span 2;">التقارير الشاملة</a>
+        </div>
+
+        <!-- زر تواصل العميل عبر الواتساب -->
+        <a href="https://wa.me/201115197980?text=السلام%20عليهم%20يا%20باشمهندس%20السيد،%20لدي%20استفسار%20بخصوص%20تطبيق%20دورة%20الفراخ:" class="whatsapp-btn" target="_blank">
+            للتواصل والاشتراكات: 01115197980
+        </a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | جميع الحقوق محفوظة
+    </div>
+
+    <script>
+        // الألوان المتاحة (الخلفية + لون الخط المتبوع أوتوماتيكياً)
+        const themes = [
+            { bg: '#f4f8f4', text: '#333333', card: '#ffffff' }, // فاتح افتراضي
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' }, // رمادي هادئ
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' }, // بيج دافئ
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' }, // اخضر مريح
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }  // ليلي غامق (خط أبيض واضح تماماً!)
+        ];
+        
+        function applySavedBackground() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex);
+            
+            const currentTheme = themes[savedIndex];
+            document.documentElement.style.setProperty('--bg-color', currentTheme.bg);
+            document.documentElement.style.setProperty('--text-color', currentTheme.text);
+            document.documentElement.style.setProperty('--card-bg', currentTheme.card);
+        }
+
+        function toggleBackground() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            savedIndex = savedIndex === null ? 0 : parseInt(savedIndex);
+            savedIndex = (savedIndex + 1) % themes.length;
+            
+            localStorage.setItem('app_bg_index', savedIndex);
+            applySavedBackground();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let localUserName = localStorage.getItem('app_user_name');
+            if (!localUserName) {
+                localUserName = "المستأجر الحالي";
+                localStorage.setItem('app_user_name', localUserName);
+            }
+            document.getElementById('userNameDisplay').innerText = localUserName;
+            applySavedBackground();
+        });
+
+        // السحب للتحديث
+        let touchStartY = 0;
+        let touchMoveY = 0;
+        const refreshIndicator = document.getElementById('refreshIndicator');
+
+        window.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (window.scrollY === 0) {
+                touchMoveY = e.touches[0].clientY;
+                let pullDistance = touchMoveY - touchStartY;
+                if (pullDistance > 0 && pullDistance < 120) {
+                    refreshIndicator.style.top = (pullDistance - 50) + 'px';
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            let pullDistance = touchMoveY - touchStartY;
+            if (pullDistance > 70 && window.scrollY === 0) {
+                refreshIndicator.style.top = '20px';
+                refreshIndicator.classList.add('spinning');
+                setTimeout(() => {
+                    refreshIndicator.style.top = '-50px';
+                    refreshIndicator.classList.remove('spinning');
+                    touchStartY = 0; touchMoveY = 0;
+                }, 1200);
+            } else {
+                refreshIndicator.style.top = '-50px';
+                touchStartY = 0; touchMoveY = 0;
+            }
+        });
+    </script>
+</body>
+</html>

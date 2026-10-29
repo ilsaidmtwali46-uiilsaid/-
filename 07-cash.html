@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>حسابات الآجل (دائن ومدين) - برنامج تتبع دورة فراخ 45 يوم</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #f57c00;
+            --bg-color: #f4f6f8; 
+            --text-color: #333333;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 12px;
+            opacity: 0.95;
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* كارت إجمالي الأرصدة (دائن / مدين) */
+        .summary-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .summary-card {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .summary-card strong {
+            display: block;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .creditor { color: #c62828; } /* دائن (فلوس للناس علينا) */
+        .debtor { color: #2e7d32; }    /* مدين (فلوس لنا عند الناس) */
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: inherit;
+            color: inherit;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(46,125,50,0.3);
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>حسابات الآجل (دائن / مدين)</h1>
+        <p>متابعة مديونيات الموردين والعملاء وتسهيل المعاملات الآجلة</p>
+    </div>
+
+    <div class="container">
+
+        <!-- ملخص الأرصدة الإجمالية -->
+        <div class="summary-box">
+            <div class="summary-card">
+                إجمالي الدائنين (علينـا):
+                <strong class="creditor" id="totalCreditor">0 جنيه</strong>
+            </div>
+            <div class="summary-card">
+                إجمالي المدينين (لينـا):
+                <strong class="debtor" id="totalDebtor">0 جنيه</strong>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label for="personName">اسم الشخص أو الجهة (مورد / زبون):</label>
+                <input type="text" id="personName" placeholder="مثال: شركة الأعلاف / تاجر الفراخ">
+            </div>
+            <div class="form-group">
+                <label for="accountType">نوع الحساب:</label>
+                <select id="accountType">
+                    <option value="دائن">دائن (له فلوس عندنا - مورد أخذنا منه بضاعة آجل)</option>
+                    <option value="مدين">مدين (عليه فلوس لنا - زبون أخذ منا بضاعة آجل)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">المبلغ (بالجنيه):</label>
+                <input type="number" id="amount" placeholder="مثال: 5000">
+            </div>
+            <div class="form-group">
+                <label for="transDate">تاريخ المعاملة:</label>
+                <input type="date" id="transDate">
+            </div>
+            <button class="btn-primary" onclick="saveCreditTransaction()">حفظ معاملة الآجل محلياً</button>
+        </div>
+
+        <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+    </div>
+
+    <div class="footer">
+        برمجة السيد متولى | كافة البيانات مخزنة محلياً على هاتفك فقط
+    </div>
+
+    <script>
+        const themes = [
+            { bg: '#f4f6f8', text: '#333333', card: '#ffffff' },
+            { bg: '#eef2f3', text: '#222222', card: '#ffffff' },
+            { bg: '#fff3e0', text: '#3e2723', card: '#ffffff' },
+            { bg: '#e8f5e9', text: '#1b5e20', card: '#ffffff' },
+            { bg: '#121212', text: '#ffffff', card: '#1e1e1e' }
+        ];
+
+        function applyTheme() {
+            let savedIndex = localStorage.getItem('app_bg_index');
+            if (savedIndex === null) savedIndex = 0;
+            else savedIndex = parseInt(savedIndex);
+            const t = themes[savedIndex];
+            document.documentElement.style.setProperty('--bg-color', t.bg);
+            document.documentElement.style.setProperty('--text-color', t.text);
+            document.documentElement.style.setProperty('--card-bg', t.card);
+        }
+
+        // حساب وإجمالي الدائنين والمدينين من التخزين المحلي
+        function calculateCreditSummary() {
+            let totalCreditor = 0;
+            let totalDebtor = 0;
+
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith('credit_trans_')) {
+                    try {
+                        let trans = JSON.parse(localStorage.getItem(key));
+                        let amount = parseFloat(trans.amount) || 0;
+
+                        if (trans.type === 'دائن') {
+                            totalCreditor += amount;
+                        } else if (trans.type === 'مدين') {
+                            totalDebtor += amount;
+                        }
+                    } catch (e) {}
+                }
+            }
+
+            document.getElementById('totalCreditor').innerText = totalCreditor.toLocaleString() + ' جنيه';
+            document.getElementById('totalDebtor').innerText = totalDebtor.toLocaleString() + ' جنيه';
+        }
+
+        function saveCreditTransaction() {
+            const personName = document.getElementById('personName').value;
+            const accountType = document.getElementById('accountType').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const transDate = document.getElementById('transDate').value;
+
+            if (!personName || isNaN(amount) || amount <= 0) {
+                alert('يرجى إدخال اسم الشخص ومبلغ صحيح.');
+                return;
+            }
+
+            const creditData = {
+                name: personName,
+                type: accountType,
+                amount: amount,
+                date: transDate
+            };
+
+            localStorage.setItem('credit_trans_' + Date.now(), JSON.stringify(creditData));
+            alert('تم حفظ معاملة الآجل بنجاح على هاتفك!');
+            calculateCreditSummary();
+
+            // تفريغ الحقول
+            document.getElementById('personName').value = '';
+            document.getElementById('amount').value = '';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            document.getElementById('transDate').valueAsDate = new Date();
+            calculateCreditSummary();
+        });
+    </script>
+</body>
+</html>
